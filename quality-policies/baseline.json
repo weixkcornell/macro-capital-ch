@@ -1,0 +1,721 @@
+{
+  "id": "baseline",
+  "version": "2.10.0",
+  "schemaVersion": 2,
+  "name": "五道起步门禁",
+  "description": "合作伙伴起步门禁基线（五道）：禁例 token、数字一致、渲染溢出、排版审计、章节大纲。",
+  "maxRepairRounds": 2,
+  "gates": [
+    {
+      "id": "banned-tokens",
+      "name": "禁例 token 0 命中",
+      "kind": "deterministic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "config": {
+        "bannedTokens": [
+          "某书认为",
+          "本书认为",
+          "书中认为",
+          "作者认为",
+          "根据《",
+          "书名痕迹",
+          "宏观经济学二十五讲",
+          "金融经济学二十五讲",
+          "宏观经济数据分析手册",
+          "中国主要统计指标诠释",
+          "信用创造、货币供求与经济结构",
+          "主动投资组合管理",
+          "量化股票组合管理",
+          "高效的无效",
+          "因子投资：方法与实践",
+          "投资绩效测评",
+          "2020 CFA Program Curriculum",
+          "2025 CFA",
+          "徐高",
+          "李奇霖",
+          "李斌",
+          "伍戈",
+          "Grinold",
+          "Kahn",
+          "钦塞瑞尼",
+          "佩德森",
+          "石川",
+          "Andrew Ang",
+          "Ilmanen",
+          "霍华德·马克斯",
+          "劳顿",
+          "扬科夫斯基",
+          "沃尔特·小哈斯莱特",
+          "Harvey",
+          "Bailey",
+          "López de Prado",
+          "Frazzini",
+          "Damodaran",
+          "Moreira",
+          "Khandani",
+          "Greenwood",
+          "Koijen",
+          "Barroso",
+          "Lou",
+          "Maillard",
+          "Kerry Back",
+          "Karolyi",
+          "Bali",
+          "东证期货",
+          "开源证券",
+          "Gagliardone",
+          "Gertler",
+          "Kekre",
+          "Lenel",
+          "Fernández-Villaverde",
+          "Mineyama",
+          "Chen",
+          "Zimmermann",
+          "Cong",
+          "Mosaics",
+          "Publication Bias",
+          "刘洋溢",
+          "连祥斌",
+          "CFA 2020 L1 六卷",
+          "CFA Institute",
+          "CFA 2025 L1/L2/L3 十三卷",
+          "大类资产配置系列",
+          "大类资产配置研究系列",
+          "The Deflated Sharpe Ratio",
+          "...and the Cross-Section of Expected Returns",
+          "Liu & Zhu 2016",
+          "Israel & Moskowitz 2018",
+          "Volatility Managed Portfolios",
+          "What Happened to the Quants in August 2007?",
+          "Stock Price Fragility",
+          "Moskowitz",
+          "Pedersen & Vrugt 2018",
+          "Momentum Has Its Moments",
+          "Comomentum",
+          "Equal Risk Contribution  Portfolios",
+          "Roncalli & Teiletche 2010",
+          "Asset Pricing and Portfolio Choice Theory",
+          "Cracking the Emerging Markets Enigma",
+          "Empirical Asset Pricing",
+          "Engle & Murray 2016",
+          "Oil Prices, Monetary Policy and Inflation Surges",
+          "The Flight to Safety and International Risk Sharing",
+          "Are We Fragmented Yet?",
+          "Feng",
+          "He & Wang",
+          "The Global Financial Cycle",
+          "Miranda-Agrippino",
+          "Financial Decisions and Markets",
+          "John Y. Campbell",
+          "Advanced Portfolio Management",
+          "Giuseppe A. Paleologo",
+          "Finding Alpha",
+          "Eric Falkenstein",
+          "Alpha Trader",
+          "Brent Donnelly",
+          "Wayne Ferson",
+          "Red-Blooded Risk",
+          "Kim & Brown",
+          "The Front Office",
+          "Tom Costello",
+          "腿",
+          "The Econometrics of Financial Markets",
+          "Campbell",
+          "MacKinlay",
+          "Analysis of Financial Time Series",
+          "Tsay",
+          "Risk and Asset Allocation",
+          "Meucci",
+          "Handbook of Economic Forecasting",
+          "Elliott",
+          "Timmermann",
+          "The Economics of Exchange Rates",
+          "Sarno",
+          "Taylor"
+        ],
+        "bannedTokensAllowlist": [
+          "国家统计局",
+          "预期收益",
+          "风险管理",
+          "Asset Management",
+          "Backtesting",
+          "Carry",
+          "Trading Costs",
+          "Equity Risk Premiums"
+        ],
+        "bannedTokensReview": [],
+        "bannedTokensPolicy": {
+          "maxStrictGaps": 0,
+          "maxReviewPending": 0,
+          "why": "allowlist＝通用术语，明确【不得】入禁例（入了会让合法散文误报）；strict＝其余未覆盖的专名/篇名，为真缺口；review＝待人工判定，上限 0 ⇒ 不允许出现'挂着的未决项'，有疑问必须当场判定并写进 allowlist 或 bannedTokens。",
+          "allowlistDecisionNote": "`Trading Costs` 与 `Equity Risk Premiums`（2.4.6 由 review 落定为 allowlist）：二者是通用英文金融短语，中文报告写「交易成本」「股权风险溢价」；把它们当禁例会误伤合法的英文引述。若将来要以来源身份拦截，应禁更具体的完整篇名，而不是这两个通用短语。"
+        },
+        "wiring": {
+          "executor": "scripts/audit-delivery.sh",
+          "consumesKeys": [
+            "bannedTokens",
+            "bannedTokensAllowlist"
+          ],
+          "notConsumed": [
+            "bannedTokensReview",
+            "bannedTokensPolicy"
+          ],
+          "note": "交付侧由 audit-delivery.sh 的内联扫描消费禁例表与豁免表；review/policy 两键由 check-pack.mjs 的包侧判据消费"
+        }
+      },
+      "description": "委托方要求脱敏的量值、禁用表述逐 token 扫描，0 命中。禁例含三类：① 书目/作者痕迹词干（由 source/SOURCE-MANIFEST.json 派生，check-pack 逐词覆盖核验）；② 通用禁例表述；③ 语言硬规则——产出全文不得出现「腿」这一比喻（它把可核验的度量单位换成身体隐喻，读者需二次翻译）；拥挤度的三个角度统一称「三条口径」。"
+    },
+    {
+      "id": "number-consistency",
+      "name": "数字一致 + 摘要—正文—底座三方对撞 + 取数档位声明",
+      "kind": "deterministic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "description": "正文所有数字与数据底座逐一对照；摘要、正文、底座三方对撞，关键概括必须能在底座找到同口径证据；改数只改底座一处。**每个数字另须可回溯到其取数档位**：先试 Wind CLI，取不到再退回（westock → 公开接口 → 外部口径），本期实际档位与未走 Wind 的原因须在「方法可靠性声明」写明。",
+      "config": {
+        "rules": [
+          "正文数字与数据底座逐项一致。",
+          "摘要中的每条概括必须在正文找到对应论据、并在底座找到同口径证据。",
+          "三方不一致时不得发布，先回底座查错。",
+          "每个数字的取数档位可回溯：Wind CLI 优先；未走 Wind 的须在「方法可靠性声明」给出原因与实际来源。"
+        ],
+        "dataSourcePriority": [
+          "wind",
+          "westock",
+          "public-selfcompute",
+          "external-with-citation"
+        ],
+        "requiresSourceTierDeclaration": true,
+        "wiring": {
+          "builtin": true,
+          "executor": "skills/macro-capital-framework/references/scripts/i1_collision_check.py",
+          "reason": "交付侧由 i1_collision_check.py 做「摘要—正文—底座」三方数字对撞，判据在脚本内（不读 config 键）；config 三键为口径规则说明，其中「取数档位声明」的**机器强制**在 wind-provenance（requireIndicatorCode 等）"
+        }
+      }
+    },
+    {
+      "id": "gate-a-double-calibration",
+      "name": "闸门 A 正反双校准（未过校正 ≠ 反向成立）",
+      "kind": "semantic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "config": {
+        "forwardCalibration": [
+          "haircut-sharpe",
+          "deflated-sharpe"
+        ],
+        "reverseCalibration": "publication-bias-shrinkage-10-15pct",
+        "forbidReverseInference": true,
+        "forbidClaimingFactorInvalid": true,
+        "requiredWording": "证据不足，两个方向都不支持",
+        "requiresGeometricArithmeticDeclaration": true,
+        "requiresParameterSearchDisclosure": true,
+        "minObservations": 30,
+        "forbidOverseasDeductionAnchor": "2%（A 股波动更高，折减更大，禁止沿用）",
+        "wiring": {
+          "semantic": true,
+          "reason": "统计口径与措辞的人工判据（成员按 §3 闸门 A 逐条自证 + 复核者抽查），本包无执行器；9 个 config 键为判据说明"
+        }
+      },
+      "description": "任何「因子有效/无效」「信号成立/反向成立」的断言须同时过正向折半（Haircut/Deflated Sharpe 双口径取较严者）与反向校准（发表偏误收缩仅 10–15%，FDR<10%）。未过校正的结论只允许写「证据不足，两个方向都不支持」，禁止反向解读。v29 起新增两项交付侧强制：① 收益口径折减——任何被引用或自算的收益数字须先声明几何/算术口径，算术口径须扣方差/2 折减（A 股指数波动长期高于 20%，禁止沿用海外 2% 锚）；② p-hacking 拦截——须披露调参次数/试过的阈值档数/最终采用档位，少于 30 个观测的研究不得单独下结论。凯利下注上限按可预测性分层取 P。"
+    },
+    {
+      "id": "render-overflow",
+      "name": "渲染 0 溢出 + 对比度 AA",
+      "kind": "visual",
+      "severity": "hard",
+      "appliesTo": [
+        "html",
+        "pdf"
+      ],
+      "description": "双视口检查：无溢出、对比度达 WCAG AA。",
+      "config": {
+        "viewports": [
+          {
+            "w": 320,
+            "h": 800
+          },
+          {
+            "w": 390,
+            "h": 844
+          },
+          {
+            "w": 375,
+            "h": 812
+          },
+          {
+            "w": 768,
+            "h": 1024
+          },
+          {
+            "w": 1280,
+            "h": 900
+          },
+          {
+            "w": 1920,
+            "h": 1080
+          }
+        ],
+        "overflowCriterion": "两条规则，其他一律不算溢出：① 页面级：documentElement.scrollWidth − clientWidth > 1px ⇒ 横向溢出（唯一的\"页面跑偏\"判据）；② 元素级：某元素 scrollWidth − clientWidth > 1px 且其 overflowX 不属于 {visible, auto, scroll} ⇒ 内容被裁切。【显式排除（都实测误报过）】(a) 元素宽于视口但其祖先容器可横向滚动（如表格外层 .tw{overflow-x:auto}）——设计如此；(b) 无障碍用的视觉隐藏元素（.sr-only 一类：position:absolute + clip/clip-path 且尺寸 ≤2px）——本就该被裁掉；(c) \"元素右边界超出视口\"本身不算问题（否则小屏下所有宽表都误报）。【实测】第一版工具漏掉 (a)(c) ⇒ 误报 7–42 个/视口；漏掉 (b) ⇒ 每个视口误报 1 个（首单产物的\"跳到正文\"链接）。两条都补上后归零。",
+        "contrastStandard": "WCAG AA：正文 ≥4.5:1；大字（fontSize ≥24px，或 ≥18.66px 且 fontWeight ≥700）≥3.0:1；判定取 ratio ≥ need − 0.005 以吸收取整误差",
+        "coverage": "全节点穷举，禁止抽样（首单曾因抽样 77 项漏掉 12 处不可读节点）",
+        "tooling": "headless chromium 实测，不读取作者自报",
+        "evidenceFromTrialRun": "首单（观澜·A股观点看板）：对比度 1079/1079 pass、0 fail；全节点 1542 节点 0 失败；五档视口 0 溢出。脚本见该单 out/qa-render-audit.py、out/verify-contrast-nodes.py",
+        "wiring": {
+          "executor": "scripts/audit-render.py",
+          "consumesKeys": [
+            "viewports",
+            "overflowCriterion",
+            "contrastStandard",
+            "coverage"
+          ],
+          "notConsumed": [
+            "tooling",
+            "evidenceFromTrialRun"
+          ],
+          "note": "tooling/evidenceFromTrialRun 为工具与留痕说明"
+        }
+      }
+    },
+    {
+      "id": "layout-audit",
+      "name": "排版审计 0 问题",
+      "kind": "visual",
+      "severity": "soft",
+      "appliesTo": [
+        "html",
+        "pdf"
+      ],
+      "description": "排版审计 0 问题（标题层级、表格对齐、脚注回链）。",
+      "config": {
+        "checks": [
+          "标题层级不跳级（h1→h2→h3）",
+          "表格表头列数 = 每行列数",
+          "每个脚注有回链"
+        ],
+        "severityNote": "soft：只出报告不阻断发布；但命中须在交付说明里列出",
+        "evidenceFromTrialRun": "首单：11 条脚注 + 22 条外链逐条核对；表头列数核对见 out/verify-fidelity.py 的表格单元",
+        "wiring": {
+          "semantic": true,
+          "reason": "排版审计为人工/抽样判据（severity=soft）；checks 列表为审计项说明，无执行器"
+        }
+      }
+    },
+    {
+      "id": "section-outline",
+      "name": "章节大纲对照输出模板",
+      "kind": "semantic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "description": "PDF/HTML 章节大纲逐项对照 output-templates 定义，强制章节缺一不可。",
+      "config": {
+        "source": "output-templates[].documentStructure.sections（required=true 的章节缺一不可）",
+        "extraction": "markdown 取 H2 序列；HTML 取 h2 序列（结构节点，非正文字符串匹配）；比较前按 normalization 规范化。",
+        "criterion": "产物章节集合 ⊇ 模板 required 章节集合；顺序与模板一致；多余章节允许但须在报告中标明",
+        "evidenceFromTrialRun": "首单：a-share-outlook 模板 6 章齐备（摘要／市场共识与我的分歧／六步主体／上期判断回顾／方法可靠性声明／脚注与来源）",
+        "normalization": "比较前先规范化：去掉可选的中文/阿拉伯数字编号前缀（如「一、」「二、」「1.」「1、」「（一）」）与所有空白；不区分全角/半角括号。规范化规则必须与产物写法一起声明，否则同一份报告会因编号写法被判\"缺章节\"（首单即如此：标题作「一、摘要」，严格匹配下 6 章全判缺）。",
+        "wiring": {
+          "executor": "scripts/check-sections.mjs",
+          "consumesKeys": [
+            "criterion",
+            "normalization"
+          ],
+          "notConsumed": [
+            "source",
+            "extraction",
+            "evidenceFromTrialRun"
+          ],
+          "note": "source/extraction 为判据来源说明"
+        }
+      }
+    },
+    {
+      "id": "placeholder-clean",
+      "name": "全文无【替换：…】占位符残留",
+      "kind": "deterministic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "config": {
+        "pattern": "【替换：",
+        "wiring": {
+          "builtin": true,
+          "reason": "交付侧为 audit-delivery.sh 内联扫描（判据为本仓约定：生成器须自带空值自检）；pattern 键供 selftest-gates 用，不参与交付门判定"
+        }
+      }
+    },
+    {
+      "id": "net-active-return-required",
+      "name": "配置结论必给「E[R_A] − 实施成本 = 净预期主动收益」（两版并列），净额 ≤ 0 不发布",
+      "kind": "deterministic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "config": {
+        "requiresERAReturn": true,
+        "requiresImplementCost": true,
+        "requiresActiveWeightVector": true,
+        "rejectNonPositive": true,
+        "requiresTwoVersions": [
+          "含③（①+②+③）",
+          "不含③（①+②）"
+        ],
+        "requiresComponentProvenance": true,
+        "wiring": {
+          "semantic": true,
+          "reason": "主动收益净额为负即不发布的**结论判据**（闸门 B，人工按台账核对）；6 个 config 键为判据说明"
+        }
+      },
+      "description": "任何配置结论须给出三段式 E[R_A] 并标注成分来源：E[R_A]含③ = ①支付收益率 + ②预期现金流增长率 + ③预期估值变化；E[R_A]不含③ = ① + ②（两项完全可观测，稳健基准）。两版都要减实施成本、都要给「扣除后还剩多少 bp」；净预期主动收益 ≤ 0 不发布；只有两版同号的方向才可建仓，异号者记「观察」并写明转同号的触发条件。"
+    },
+    {
+      "id": "active-risk-budget",
+      "name": "主动风险须在事前额度内（协方差口径，禁简单加总）",
+      "kind": "deterministic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "config": {
+        "covarianceBasedTE": true,
+        "forbidSimpleSum": true,
+        "requireBudgetDeclaration": true,
+        "wiring": {
+          "semantic": true,
+          "reason": "主动风险额度为事前档位的**台账判据**（人工核对协方差口径与预算）；3 个 config 键为判据说明"
+        }
+      },
+      "description": "任何偏离须用协方差口径 σ_A 精算并对照事前档位额度；超额度只能缩幅度或降级观察，不得放宽额度，不得用各主动头寸 σ_A 简单加总代替。 v29 起另须报「有效独立标的数」N_eff = N/(1+(N−1)·ρ̄) 与标的间平均相关 ρ̄：名义标的数不等于独立赌注数（实测 29 条行业指数只等于 6.2 条），二者是判断「某热点值不值得下注」的必报量。"
+    },
+    {
+      "id": "collision-check",
+      "name": "摘要—正文—底座三方对撞 0 不一致",
+      "kind": "deterministic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "config": {
+        "toolCapability": "macro.collision.check",
+        "args": [
+          "--md",
+          "<report.md>",
+          "--pool",
+          "<data.json>",
+          "--out",
+          "<i1-report.json>"
+        ],
+        "wiring": {
+          "semantic": true,
+          "reason": "冲突检查依赖外部 toolCapability 与调用参数，由运行者按 config.args 执行并留痕，无包内执行器"
+        }
+      },
+      "description": "摘要中的每条概括必须在正文找到对应论据、并在数据底座找到同口径证据；三方不一致不得发布。由 toolProviders/macro-capital-tools 的 macro.collision.check 执行（SKILL.md §3.3）。"
+    },
+    {
+      "id": "wind-provenance",
+      "name": "Wind 取数档位口径与凭据 fail-closed（可执行）",
+      "kind": "deterministic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "description": "在 number-consistency 的「取数档位声明」判据之上，把「先试 Wind、不得静默降级、降级须逐项标注」落成可执行检查（由 scripts/check-wind-provenance.py 执行）。",
+      "config": {
+        "primaryChannel": "Wind CLI（wind-mcp-skill）",
+        "cliRoute": "search_economic_indicator '{\"question\":\"…\"}' → 取指标代码（用于引用）；query_economic_indicator_data '{\"question\":\"…\",\"beginDate\":\"YYYY-MM-DD\",\"endDate\":\"YYYY-MM-DD\"}' → 取时序。**query 只收 question（+可选日期/observation/target*），不收 indicator_code**（传即 PARAM_VALIDATION_ERROR，2026-09-30 实测）",
+        "credentialLadder": [
+          "~/.wind-aifinmarket/config (WIND_API_KEY)",
+          "<skill>/config.json (wind_api_key)",
+          "环境变量 WIND_API_KEY"
+        ],
+        "citationFormat": "（Wind EDB，<发布机构>，截至 <年-月>）；成功必附「数据来源于万得 Wind 金融数据服务」+ 指标代码",
+        "failClosed": [
+          "AUTH_ERROR / CREDENTIAL_MISSING ⇒ 如实报通道不可用 + 已试凭据路径 + 错误码，并写入「方法可靠性声明」",
+          "禁止重装 skill/provider 作为修法；禁止改走 analytics_data / wind-alice 绕过；禁止静默降级",
+          "使用降级通道（westock / 公开自算 / 外部口径）的每个数字须逐项标注降级理由与来源",
+          "三态须分清：AUTH_ERROR/CREDENTIAL_MISSING＝凭据或 HOME 解析问题；PARAM_VALIDATION_ERROR＝入参错；backend_error『积分余额不足』＝鉴权正常但**额度耗尽**（2026-09-30 实测），不得读成凭据缺失、不得据此改判档位"
+        ],
+        "negationContext": "『未重装/未绕走/未静默降级』这类**否定语境的提及不算违规**（纪律声明本身必须能写出这些词）；仅在非否定语境下才判禁止动作",
+        "executable": "scripts/check-wind-provenance.py --md <final.md> --out <json>（--selftest 自校准：2 正向 + 3 反向）",
+        "lastProbe": {
+          "date": "2026-09-30",
+          "result": "ok（HOME=/root 下 search 与 query 均成功）",
+          "samples": [
+            "M0342072 沪深300指数:收盘价 点/上交所/日",
+            "M0000612 中国:CPI:当月同比 %/国家统计局/月(截至20260831)"
+          ]
+        },
+        "homeRequirement": "CLI 按 homedir() 解析 ~/.wind-aifinmarket/config；若进程 HOME 不是凭据所在用户的家目录（本例 HOME=workspace），会误报 AUTH_ERROR『WIND_API_KEY 未配置』。凭据存在时的正确调用是 `HOME=/root node …cli.mjs …`；**此误报不等于凭据缺失**，须先按 homedir 复核再判定 fail-closed。",
+        "quotaState": {
+          "observedAt": "2026-09-30T22:35+08:00",
+          "code": "backend_error",
+          "meaning": "鉴权正常、额度耗尽",
+          "operatorAction": "充值后方可使用档位 1"
+        },
+        "requireIndicatorCode": true,
+        "requireErrorCodeInReliability": true,
+        "requireCredentialPathInReliability": true,
+        "switchNote": "下列三个开关由 scripts/check-wind-provenance.py **真正消费**（v2.8.10 起）：requireIndicatorCode＝Wind 引用必须带指标代码或标「待补」；requireErrorCodeInReliability＝降级记录须含错误码；requireCredentialPathInReliability＝降级记录须说明已试凭据路径。审计结论：v2.8.10 之前该脚本读到了 config 却从未传入检查函数（判据全内置）；现已有「判据来源」自校准对照。",
+        "wiring": {
+          "executor": "scripts/check-wind-provenance.py",
+          "consumesKeys": [
+            "requireIndicatorCode",
+            "requireErrorCodeInReliability",
+            "requireCredentialPathInReliability"
+          ],
+          "notConsumed": [
+            "primaryChannel",
+            "cliRoute",
+            "credentialLadder",
+            "citationFormat",
+            "failClosed",
+            "negationContext",
+            "lastProbe",
+            "homeRequirement",
+            "quotaState",
+            "executable",
+            "switchNote"
+          ],
+          "selfTest": "python3 scripts/check-wind-provenance.py --selftest",
+          "note": "其余键为通道说明/凭据阶梯/探针记录与三态口径，供人读与审计；三个 require* 开关是真正的机器判据（v2.8.10 起被消费）"
+        }
+      }
+    },
+    {
+      "id": "mobile-readability",
+      "name": "移动端可读性门",
+      "kind": "visual",
+      "severity": "hard",
+      "appliesTo": [
+        "html"
+      ],
+      "description": "移动端（375 主视口，覆盖 320/390）可读性下限：正文字号／页面溢出／裁切／触控目标／表格滚动／图内等效字号。",
+      "config": {
+        "viewports": [
+          {
+            "w": 320,
+            "h": 800
+          },
+          {
+            "w": 375,
+            "h": 812
+          },
+          {
+            "w": 390,
+            "h": 844
+          }
+        ],
+        "criteria": {
+          "bodyFontMinPx": {
+            "320": 16,
+            "375": 17
+          },
+          "figureLabelMinEffectivePx": {
+            "min": 11,
+            "docs": "等效字号 = font-size × 视口宽/viewBox 宽；viewBox=640 时 @375 ⇒ ≥18.8px",
+            "alternative": "提供点击全屏查看入口（纯 CSS :target 或内联 JS，仍须自包含）"
+          },
+          "tapTargetMinPx": 44,
+          "tableFontMinPx": 14,
+          "tablePolicy": "允许容器内横滚；页面级必须 0 溢出；窄屏须卡片堆叠或首列 sticky",
+          "overflow": "页面级 scrollWidth − clientWidth ≤ 1px；元素级裁切/重叠 = 0",
+          "contrast": "不得低于 render-overflow 基线（AA 全节点穷举、0 失败）",
+          "srOnlyExclusion": "无障碍视觉隐藏元素（position:absolute/fixed + clip/clip-path + 尺寸 ≤2px）不计裁切、不计触控目标 —— 与 render-overflow 判据的排除保持一致（否则每个视口都会误报「跳到正文」链接）",
+          "bodyFontMinPxNote": "读 computed style，不采信声明值（该键 2026-10-01 从映射内移出：映射只放 <视口宽>:<像素下限>，其余说明另置）"
+        },
+        "notGated": [
+          {
+            "item": "目录/rail 的版式偏好",
+            "reason": "属 renderModes.html.mobile 规格；本门只判可读性下限（包自带 render-report.mjs 已实现桌面 rail → 窄屏顶部粘性目录条）"
+          },
+          {
+            "item": "KPI 卡 4 列 → 2×2",
+            "reason": "属交付物版式，纯文本渲染器不生成 KPI 卡"
+          }
+        ],
+        "rationale": "实测：viewBox=640 的 SVG 在 375 宽下缩放 0.586× ⇒ 图内 11–12.5px 实际渲染 6.4–7.3px（不可读）；宽表靠横滚；正文 16.5px 偏小。",
+        "executable": "scripts/audit-mobile.py --html <index.html> --out <json>",
+        "wiring": {
+          "executor": "scripts/audit-mobile.py",
+          "consumesKeys": [
+            "viewports",
+            "criteria",
+            "executable"
+          ],
+          "notConsumed": [
+            "notGated",
+            "rationale"
+          ],
+          "selfTest": "python3 scripts/audit-mobile.py --selftest",
+          "note": "notGated/rationale 为「哪些不判」的说明；四项阈值全在 criteria 下（正文/图内/触控/表内）"
+        }
+      }
+    },
+    {
+      "id": "template-conformance",
+      "name": "输出模板一致性门（tokens / components / 指令，可执行）",
+      "kind": "deterministic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html"
+      ],
+      "description": "把「输出模板」从愿望清单变成可核对的契约：模板声明的 tokens 必须逐条落在产物 :root 且取值相同、声明的组件类名必须出现在产物、md 里的 ::: 指令必须在模板白名单内；并核对模板 role 对比度声明（按 token 值重算）与同包各模板核心 token 一致（一个包一个视觉身份）。由 scripts/check-template-conformance.mjs 执行。",
+      "config": {
+        "executor": "scripts/check-template-conformance.mjs",
+        "templateSource": "output-templates/*.json 的 designSystem（判据在模板里，不在执行器里）",
+        "criteria": {
+          "rolesContrast": "designSystem.roles 的每条 (前景 on 背景) 对比度由 token 值重算，必须 ≥ 声明的 minRatio（WCAG AA）",
+          "tokenEmission": ":root 必须逐条声明模板 token（--c-* / --fs-* / --lh-* / --ls-* / --sp-* / --r-* / --sh-*），且取值与模板逐字相同",
+          "components": "组件是否被使用以其首个声明类为锚点；已使用组件的非 optionalClasses 类名必须齐备",
+          "discipline": [
+            "不得出现 #fff/#000 底色（染色中性色底线）",
+            "CSS 里 font-size 只能是 var(--fs-*) 或相对单位（禁档外字号）"
+          ],
+          "directives": "md 的 ::: 名必须在模板 directives.list 白名单内；未声明指令 fail-closed（渲染器同步失败）",
+          "crossTemplate": "同包内声明了 designSystem 的各模板，其核心色阶/字号阶/行高/字距/间距阶/圆角/投影/断点必须一致"
+        },
+        "selftest": "node scripts/check-template-conformance.mjs --selftest（2 正向 + 5 负向对照，当前 7/7）",
+        "why": "此前 5 道门禁都只看产物，没有一道看「产物是否真的按模板渲染」——于是模板可以是一份与实现无关的愿望清单（v1 实况：版式写死在渲染器里、每次交付另写一套脚本）。本门禁补位。",
+        "wiring": {
+          "executor": "scripts/check-template-conformance.mjs",
+          "consumesKeys": [
+            "selftest"
+          ],
+          "notConsumed": [
+            "executor",
+            "criteria",
+            "templateSource",
+            "why"
+          ],
+          "selfTest": "node scripts/check-template-conformance.mjs --selftest",
+          "note": "真正被消费的是**模板自身**（designSystem/directives，经 CLI 传入）；executor/criteria/templateSource/why 四键为登记与说明，不参与判定"
+        }
+      }
+    },
+    {
+      "id": "style-render",
+      "name": "文风渲染（发表前必过）",
+      "kind": "semantic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "description": "发表前必须由文风渲染专家对定稿做一次表达层改写：文字表达对标 **The Economist 与财新**的写作风格与语言习惯。**刊名不得出现在产出中**，也不得写「仿某刊风格／借鉴某刊」式表述；`财新` 仅可作**被引用的数据／报道来源**出现在脚注，不得充当风格标签。 8 条对标要点逐条过、反例命中 0、刊名出现 0，且**数字/口径与数据期/结论方向/E[R_A] 两版/脚注来源/强制章节一律不得改动**；渲染证据为 `style-report.json`，缺报告视同未渲染；渲染后须重出 HTML 使产物与定稿一致。",
+      "config": {
+        "reference": "The Economist / 财新（写作风格与语言习惯对标）",
+        "internalizeOnly": true,
+        "forbidMagazineNameAsStyleLabel": true,
+        "footnoteSourceAllowed": [
+          "财新"
+        ],
+        "mustRunLast": true,
+        "reportArtifact": "style-report.json",
+        "factLayerFrozen": [
+          "数字",
+          "口径与数据期",
+          "结论方向",
+          "E[R_A] 两版",
+          "脚注与来源",
+          "强制章节"
+        ],
+        "checklist": [
+          "开门见山：首句即判断或读数，每段首句承载信息",
+          "短句、一句一事（长定语句拆成两句）",
+          "具体压过抽象：能落数字／机构／政策名／日期就不写形容词，修饰语密度低",
+          "克制修辞：不用感叹号与「震撼／爆表／史诗级／重磅」类夸张词；冷静揶揄只在无损准确性时用",
+          "主张带归因，事实与判断分句式（「数据显示…」＝事实／「我们认为…」＝判断；非自算数字跟来源与时点）",
+          "去口号化、去八股（不用「赋能／抓手／闭环／生态位／组合拳」式套话）",
+          "给可证伪的条件句（「若 X 则 Y」，与闸门 A 同源）",
+          "术语规范：外文术语首现给中文；中文为主，行业惯用缩写 PE／IR／IC／BR 等保留"
+        ],
+        "antiPatterns": [
+          "「重磅利好来袭」",
+          "「XX 概念全线爆发」",
+          "「未来可期」",
+          "以刊名充当权威背书",
+          "「赋能／抓手／闭环」式套话"
+        ],
+        "wiring": {
+          "semantic": true,
+          "reason": "文风是表达层的人工/语义判据（本包无执行器；判据为 8 条清单 + 反例清单），由文风渲染专家出 style-report.json 自证、复核者抽查；其中「刊名不可见」可事后机检（对产物做刊名词表扫描），故 config 给出 reference 与 footnoteSourceAllowed 供扫描器取用"
+        }
+      }
+    },
+    {
+      "id": "data-quality-rule-version",
+      "name": "数据质量与规则版本（横切闸门 C）",
+      "kind": "semantic",
+      "severity": "hard",
+      "appliesTo": [
+        "markdown",
+        "html",
+        "pdf"
+      ],
+      "description": "闸门 C · 数据质量与规则版本：不产出观点，但决定长期可信度。闸门 A 管「数字可不可信」、闸门 B 管「扣掉摩擦值不值」，但两者都默认「输入数据是对的、规则是稳定的」——实测中这两件事都会破（单一厂商接口的分位与自算分位会背离、序列会停在 2016/2021 年仍返回数据、复权口径会随数据源改变、规则会在版本演进中静默变更）。数据未质检 → 该数据不得进入正文；规则静默变更 → 当期须补登 CHANGELOG 并说明影响范围；账本跨版本未分组 → 累计命中率不得展示；陈旧但可返回的幻觉式数据比明确缺失更严重。",
+      "config": {
+        "dataQcTriad": [
+          "断点检测：序列须检水平跳变（结构断点）与尾部停滞（最后交易日距当期 > 阈值即判陈旧）——静默陈旧比缺数据更危险",
+          "复权校验：价格序列须声明前复权/后复权/不复权口径，同一序列跨期口径不得改变；跨源比对须先统一复权口径",
+          "跨源对账：单一厂商接口的分位必须与自算分位对账，偏离超阈值须在正文标注并说明取用哪一口径"
+        ],
+        "requiresQcReport": true,
+        "qcReportArtifact": "data_qc_out.json",
+        "ruleVersionBinding": {
+          "changelogRequired": true,
+          "requiresSkillVersionOnLedgerEntry": true,
+          "forbidSilentRuleChange": true,
+          "crossVersionAggregation": "按 skill_version 分组呈现，禁止跨版本直接加总期数"
+        },
+        "hitRateDiscipline": {
+          "requiresBaselineComparison": true,
+          "requiredBaselines": [
+            "无条件基准率",
+            "恒定基准"
+          ],
+          "indeterminateExcludedFromDenominator": true,
+          "requiresPreexistingCriteria": true
+        },
+        "sameDaySnapshot": true,
+        "crossSourceAssemblyMustDeclare": true,
+        "wiring": {
+          "semantic": true,
+          "reason": "闸门 C 的判据含「数据质检报告是否齐备、规则变更是否留痕、账本是否绑定版本、命中率是否附基准对照」四项；可机检部分由 skills 侧数据引擎产出的 data_qc_out.json 与 attribution_ledger.json 的 skill_version 字段承载（属产物侧证据，包内无独立执行器），其余为人工/语义判据。本键为判据登记说明，不参与机器判定。"
+        }
+      }
+    }
+  ],
+  "notes": "硬门未过 → 完成被阻断并返回修正指引；软门 → 警告放行（gate_warnings）；通过后产出 0-100 质量分烙进任务标题（质 NN）。建议落盘 GATE 文件（哈希 + 抽样截图）。 v2.7.0：禁例 token 同步至 46 源派生词干 + 语言硬规则（禁「腿」）；gate-a-double-calibration 补收益口径折减与 p-hacking 拦截两项交付侧判据。 v2.9.0：新增门禁 data-quality-rule-version（semantic／hard，闸门 C 四条判据：数据质检三件套／规则版本绑定／命中率账本对照／口径快照），两个组队模板均已绑定；禁例 token 同步至 51 源派生词干。"
+}

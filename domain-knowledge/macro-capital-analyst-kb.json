@@ -1,0 +1,366 @@
+{
+  "id": "macro-capital-analyst-kb",
+  "version": "2.10.0",
+  "schemaVersion": 2,
+  "name": "观澜宏观与资本市场本体",
+  "domain": "macro.capital",
+  "boundary": "仅收「方法论内化摘要层」（观澜自有提炼与框架，MIT）。原著/教材原文版权归原作者与出版方，不随包分发、不入库；涉密材料只入库摘要层。",
+  "ontology": {
+    "entities": [
+      {
+        "id": "layer0-benchmark",
+        "description": "第 0 层基准与目标函数：沪深300（价格指数口径）+ 绝对收益风险约束（回撤 −20%、现金 20%）+ 事前风控档位表 → 主动风险额度"
+      },
+      {
+        "id": "active-return",
+        "description": "主动收益框架：主动权重向量 w_a → σ_A（协方差口径）→ MCTR/CTR 欧拉分解 → E[R_A] 三项分解 → IR=IC×√BR → IC*"
+      },
+      {
+        "id": "six-step",
+        "description": "六步内化流程：钱从哪来 → 钱变利润 → 价格装多少预期 → 结构定价自洽 → 周期定位风险归属 → 错了会怎样"
+      },
+      {
+        "id": "fifteen-layer",
+        "description": "十五层能力（第 0 层为总开关，不计入）：① 数据读数与口径锚定 ② 货币信用侧 ③ 宏观骨架 ④ 金融定价 ⑤ 预期收益与资产类别定位 ⑥ 组合管理侧 ⑦ 宏观因子与周期定位 ⑧ 横截面因子定价与统计可靠性 ⑨ 摩擦、流动性与可执行性 ⑩ 资产定价模型的实证检验与诊断 ⑪ 风险边界、破产约束与极端事件治理 ⑫ 信息不对称、微观结构与激励传导 ⑬ 组合工程与生存约束 ⑭ 预测工艺与实时评估 ⑮ 波动率、尾部与时序建模"
+      },
+      {
+        "id": "gate-a",
+        "description": "闸门 A 统计可信：t 阈值分档（时序 3.8 / FM 3.4 / 单向 3.0）+ 多重检验校正（BH-FDR q=0.10 + Bonferroni）+ Haircut/Deflated Sharpe 双口径 + 凯利一致性"
+      },
+      {
+        "id": "gate-b",
+        "description": "闸门 B 实施成本与可执行：E[R_A] − 实施成本 = 净预期主动收益，净额 ≤ 0 不发布"
+      },
+      {
+        "id": "implementation-cost",
+        "description": "实施成本五度量法：佣金 + 买卖价差 + 价格冲击（平方根律，主导项）+ 延迟/机会成本 + 税费，落账 IS=TC+OC"
+      },
+      {
+        "id": "source-material",
+        "description": "溯源材料：专著 / 论文 / 教材 / 研报 / 标准，逐条登记出处与授权状态"
+      },
+      {
+        "id": "geopolitics-fragmentation",
+        "description": "地缘碎片化量化：动态分层因子模型碎片化指数、1σ → GDP −0.4%、新兴市场受害更重、即时成本与延迟收益"
+      },
+      {
+        "id": "publication-bias-calibration",
+        "description": "闸门 A 反向校准：发表偏误非主导，已发表结论收缩校正 10–15%（FDR<10%）——未过校正 ≠ 反向信号成立"
+      },
+      {
+        "id": "predictability-heterogeneity",
+        "description": "可预测性异质性：可预测性资产特定 + 状态依赖，集中于大盈利超预期／高 E-P／低换手，逆周期；凯利下注上限按可预测性聚类分层取 P"
+      },
+      {
+        "id": "usd-safe-haven-pricing",
+        "description": "美元避险定价：避险 → 美元升值 → 全球产出下降；美元债负风险溢价；跨境风险分担"
+      },
+      {
+        "id": "risk-trinity",
+        "description": "风险三维分离：波动率=运算代理；期间风险（首次穿越）+ 尾部肥尾=判断；流动性（相关性崩溃）=危机预警。三者分工，不混用单一波动率。"
+      },
+      {
+        "id": "active-management-triad",
+        "description": "主动管理三判据：零和 + 平均无 α + 持续性弱 → 默认低费率指数/指增；α 变 β 为拥挤衰减机理。"
+      },
+      {
+        "id": "factor-dual-anchor",
+        "description": "因子双锚：正锚（发表偏误收缩 10–15%，FDR<10%）与反锚（发表后衰减 50%+、拥挤与状态依赖）须同时报，缺一失真。"
+      },
+      {
+        "id": "expected-return-four-questions",
+        "description": "预期收益四问：哪类风险溢价 → 当前历史分位 → 前瞻指标指向 → 扣实施成本与期限后净额。"
+      },
+      {
+        "id": "em-erp-implicit-only",
+        "description": "新兴市场估值禁用历史 ERP：改隐含法（价格反推折现率 − 无风险利率）+ 违约利差拼装；A 股 ERP 绝对数须本地重估。"
+      },
+      {
+        "id": "cross-book-arbitration",
+        "description": "跨著作权衡元判据层：位于九层之上，用于「多派结论相左时如何折中」；不新增第十层，不改九层结构与闸门判据。"
+      },
+      {
+        "id": "carry-degradation",
+        "description": "carry 降级（v28 · gap-005 回测）：现金流收益差曾被视为唯一免检收益来源；本地对三个红利/成长配对的比值均值回归检验显示动量延续、校正后存活 0，故自 v28 起不再自动计入，不得据此放大仓位。"
+      },
+      {
+        "id": "carry-failure-clause",
+        "description": "carry 头寸失效条款（v27 新增，v28 条件 C 已触发）：连续 2 期累计负贡献 < −IC* → 权重减半降观察；连续 4 期净贡献为负 → 强制复盘；映射被证伪 → carry 不再自动计入、按 0 处理。登记于 attribution.py record，append-only。"
+      },
+      {
+        "id": "stock-level-factors",
+        "description": "个股级横截面因子（v28）：申万一级行业成份股的股息率/价值(PE·PB)/规模/动量/换手，替代原「10 指数代理」口径。"
+      },
+      {
+        "id": "northbound-holding",
+        "description": "北向持仓（v28）：fund north-holding 一手数据，用于拥挤度「持有人结构」一条腿。"
+      },
+      {
+        "id": "gap-registry",
+        "description": "缺口登记（gap-001~005）：可排期推进的已知缺口清单；gap-003（汇率历史）与 gap-005（carry 本地验证）已落地，gap-002（海外锚本地重标定）与 gap-004（第 0 层基准口径文献）仍 open。"
+      },
+      {
+        "id": "model-diagnostics",
+        "description": "⑩ 层资产定价模型的实证检验与诊断：主方程 E_t(mR)=1 为母式；α 必须绑定模型；triality 三路等价；宏观因子须先造因子模拟组合；HJ 界为排除工具（加资产使约束更紧）；有成本套利解释异象存续；CSR/Fama-MacBeth 窗口规范（60/36/24 月、日频 240 日）。"
+      },
+      {
+        "id": "risk-boundary-survival",
+        "description": "⑪ 层风险边界、破产约束与极端事件治理（概率不可赋值区域）：风险二元性；VaR 操作性定义（99 天优化 + 一年 2–3 个 break 单独归因 + 交易前指定）；凯利永不清零约束；压力测试反推法（3–10 倍 VaR，只报相对损失规模绝不报概率）；黑洞扫描（缩放平静日 ×10，推定有罪）；极端动作须在平静日预设写死。"
+      },
+      {
+        "id": "microstructure-incentives",
+        "description": "⑫ 层信息不对称、微观结构与激励传导：竞争/完全公开/部分公开三均衡阶梯；无交易定理（噪声交易者是交易量的必要条件）；卖空约束造成涨跌不对称；CGW 交易量-反转；DHS 有偏自我归因；Romer 被压抑信息；「激励 → 行为 → 价格」为一级分析链路，情绪只定赔率不定方向。"
+      },
+      {
+        "id": "portfolio-engineering",
+        "description": "⑬ 层组合工程与生存约束：仓位规则即 alpha（改定仓方法造成 10–30pp 相对差异，原始 MVO −34%）；Jagannathan-Ma 非负约束是统计改进；杠杆地板与天花板（式 10.2/10.3）；止损效率表（Sharpe=0.5 付 42%、Sharpe=2 只付 4%）；崩盘=跨投资者去杠杆（Burry 19.7%/0.03%）。"
+      },
+      {
+        "id": "expected-return-decomposition",
+        "description": "主动收益基本成分三分解：总收益 = ① 支付收益率（股息率＋净回购率）+ ② 预期现金流增长率（EPS 增长）+ ③ 预期估值变化（P/E 均值回归）。三项均为可观测/可算分量，故本模块不要求过 IC 显著性检验；须并列输出「含③」与「不含③」两版，只有两版同号的方向才可建仓。"
+      },
+      {
+        "id": "effective-breadth",
+        "description": "有效独立标的数 N_eff = N/(1+(N−1)·ρ̄) 与标的间平均相关 ρ̄：名义标的数不等于独立赌注数（实测 29 条行业指数只等于 6.2 条，ρ̄=0.132、BR≈25），二者是判断「某热点值不值得下注」的必报量。"
+      },
+      {
+        "id": "language-standard",
+        "description": "语言硬规则（v35）：产出与内部文档一律不得用「腿」这一比喻称呼头寸、标的或口径，拥挤度的三个角度统一称「三条口径」；加粗只给数字与关键术语、不得包整句判断；破折号只作「即/也就是」的补充、不得代替冒号与句号；长句拆短（一句一事）。"
+      },
+      {
+        "id": "geometric-deduction",
+        "description": "收益口径折减：算术平均收益高估买入持有可获收益，差额 = 方差/2（海外锚约 2%，不分散者约 4.5%）；A 股指数波动长期高于 20%，折减只会更大，禁止沿用 2%。须在正文声明几何/算术口径。"
+      },
+      {
+        "id": "trio-positioning",
+        "description": "三问定位（周期定位的跨书折中）：结构定方向 → 时钟定状态 → 情绪定仓位（精度递增、确定性递减）。时钟是参考不是圣杯（A 股解释度仅 43–57%、时钟动量准确率 54–65%）；商业周期择时有成本陷阱，只做温和偏移不做大幅择时。"
+      },
+      {
+        "id": "gate-c",
+        "description": "闸门 C 数据质量与规则版本：数据质检三件套（断点检测/复权校验/跨源对账，每期必跑）+ 规则版本绑定（CHANGELOG 留痕、账本带 skill_version、跨版本分组呈现）+ 命中率账本对照（无条件基准率 + 恒定基准、模糊判定记 indeterminate 并排除在分母外、判定标准事前登记）+ 口径快照（同表同类同日，跨源拼装须声明）。不产出观点，但决定长期可信度。"
+      },
+      {
+        "id": "layer-14-forecasting",
+        "description": "第 ⑭ 层 预测工艺与实时评估：状态分离原则（衰退期非线性动态因子/马尔可夫转换精度最好）+ nowcasting 实时数据流（vintage）纪律 + 评估口径分家（学术 t vs 投资者 IR）+ 变量选择先决纪律（AIC/FPE、一般到特殊）+ 加总方向不可互换 + 隐含信息两步分家 + 商品价格可预测性默认不可预测；v40 增预测登记与校准工作台（概率登记、Brier 分数、基准对照、预测组合、技能 vs 运气）与事件研究范式（CAR 窗口含次日溢出）"
+      },
+      {
+        "id": "layer-15-volatility",
+        "description": "第 ⑮ 层 波动率、尾部与时序建模：波动率＝条件标准差 + ARCH 家族谱系（ARCH/GARCH/EGARCH/TGARCH/CHARMA）+ 非线性统一分解（改 g 还是改 h，诊断先 h 后 g）+ 因子模型三类不可混谈（PCA 解释度不得当定价证据）+ 多元条件协方差时变（DCC/正交 GARCH 起点）+ 极值与 VaR 独立于二阶矩 + 状态空间与 Kalman（对接第 ⑭ 层 nowcasting）"
+      }
+    ],
+    "relations": [
+      {
+        "id": "layer0-governs-active-return",
+        "from": "layer0-benchmark",
+        "to": "active-return"
+      },
+      {
+        "id": "gate-a-guards-active-return",
+        "from": "gate-a",
+        "to": "active-return"
+      },
+      {
+        "id": "gate-b-guards-active-return",
+        "from": "gate-b",
+        "to": "active-return"
+      },
+      {
+        "id": "implementation-cost-feeds-gate-b",
+        "from": "implementation-cost",
+        "to": "gate-b"
+      },
+      {
+        "id": "six-step-organises-fifteen-layer",
+        "from": "six-step",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "source-material-grounds-fifteen-layer",
+        "from": "source-material",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "publication-bias-calibration-calibrates-gate-a",
+        "from": "publication-bias-calibration",
+        "to": "gate-a"
+      },
+      {
+        "id": "predictability-heterogeneity-informs-active-return",
+        "from": "predictability-heterogeneity",
+        "to": "active-return"
+      },
+      {
+        "id": "geopolitics-fragmentation-feeds-fifteen-layer",
+        "from": "geopolitics-fragmentation",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "cross-book-arbitration-governs-fifteen-layer",
+        "from": "cross-book-arbitration",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "risk-trinity-informs-gate-a",
+        "from": "risk-trinity",
+        "to": "gate-a"
+      },
+      {
+        "id": "factor-dual-anchor-calibrates-gate-a",
+        "from": "factor-dual-anchor",
+        "to": "gate-a"
+      },
+      {
+        "id": "active-management-triad-informs-fifteen-layer",
+        "from": "active-management-triad",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "expected-return-four-questions-informs-fifteen-layer",
+        "from": "expected-return-four-questions",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "em-erp-implicit-only-informs-fifteen-layer",
+        "from": "em-erp-implicit-only",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "carry-degradation-governs-active-return",
+        "from": "carry-degradation",
+        "to": "active-return"
+      },
+      {
+        "id": "carry-failure-clause-informs-gate-b",
+        "from": "carry-failure-clause",
+        "to": "gate-b"
+      },
+      {
+        "id": "gap-registry-informs-gate-a",
+        "from": "gap-registry",
+        "to": "gate-a"
+      },
+      {
+        "id": "stock-level-factors-informs-fifteen-layer",
+        "from": "stock-level-factors",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "northbound-holding-informs-fifteen-layer",
+        "from": "northbound-holding",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "model-diagnostics-guards-active-return",
+        "from": "model-diagnostics",
+        "to": "active-return"
+      },
+      {
+        "id": "risk-boundary-survival-informs-fifteen-layer",
+        "from": "risk-boundary-survival",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "risk-boundary-survival-guards-gate-b",
+        "from": "risk-boundary-survival",
+        "to": "gate-b"
+      },
+      {
+        "id": "microstructure-incentives-informs-fifteen-layer",
+        "from": "microstructure-incentives",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "portfolio-engineering-informs-fifteen-layer",
+        "from": "portfolio-engineering",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "expected-return-decomposition-governs-active-return",
+        "from": "expected-return-decomposition",
+        "to": "active-return"
+      },
+      {
+        "id": "effective-breadth-calibrates-active-return",
+        "from": "effective-breadth",
+        "to": "active-return"
+      },
+      {
+        "id": "language-standard-governs-active-return",
+        "from": "language-standard",
+        "to": "active-return"
+      },
+      {
+        "id": "geometric-deduction-calibrates-gate-a",
+        "from": "geometric-deduction",
+        "to": "gate-a"
+      },
+      {
+        "id": "trio-positioning-informs-fifteen-layer",
+        "from": "trio-positioning",
+        "to": "fifteen-layer"
+      },
+      {
+        "id": "source-material-grounds-layer-14-15",
+        "from": "source-material",
+        "to": "layer-14-forecasting",
+        "relation": "grounds",
+        "note": "预测工艺与实时评估层的底本为预测学手册与计量金融教材；波动率与尾部层为时间序列与风险配置专著"
+      },
+      {
+        "id": "fifteen-layer-grounds-forecasting-volatility",
+        "from": "fifteen-layer",
+        "to": "layer-15-volatility",
+        "relation": "extends-to",
+        "note": "第 ⑮ 层是第 ⑭ 层之后新增的二阶矩与尾部建模层；两层在预测登记与波动率预测上直接对接"
+      },
+      {
+        "id": "gate-c-governs-data-and-rule-version",
+        "from": "gate-c",
+        "to": "source-material",
+        "relation": "governs",
+        "note": "闸门 C 横向管住数据质量与规则版本，不产出观点但决定长期可信度"
+      }
+    ]
+  },
+  "collections": [
+    {
+      "id": "source-materials",
+      "root": "knowledge/experts/macro-capital-analyst",
+      "note": "该 root 在本仓内**只有 README**：46 份材料本体（原著/教材/论文原文）受版权约束、不随包分发，故开源仓中此 collection 读不到实体 —— 这是设计，不是缺文件。可分发的只有「方法论内化摘要层」与 source/SOURCE-MANIFEST.json 的溯源账本（fileRef 的解析根见其 fileRefRoot）。"
+    }
+  ],
+  "snapshot": {
+    "id": "source-manifest-46",
+    "renamedFrom": "source-manifest-2.3.0",
+    "takenAt": "2026-09-29",
+    "digest": "660ad0123655b768a743f2b794236613a68d8dc1e08607f0488bfd6ce08bb196",
+    "digestAlgorithm": "sha256",
+    "digestTarget": "source/SOURCE-MANIFEST.json",
+    "digestNote": "digest = sha256(原文件字节)。id 只写内容特征（46 份材料），不写包版本号 —— 包版本会随每次发布漂移，写进 id 会让同一个快照在下一版里显示成「过期快照」。",
+    "recordCount": 46
+  },
+  "retrievalProfiles": [
+    {
+      "id": "citation-lookup",
+      "method": "keyword"
+    },
+    {
+      "id": "methodology-recall",
+      "method": "semantic"
+    },
+    {
+      "id": "framework-graph",
+      "method": "graph"
+    },
+    {
+      "id": "full-read",
+      "method": "full-read"
+    }
+  ],
+  "policies": {
+    "citation": "required",
+    "freshness": "static",
+    "access": "readonly"
+  },
+  "description": ""
+}

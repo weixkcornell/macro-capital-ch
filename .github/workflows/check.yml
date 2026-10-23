@@ -1,0 +1,64 @@
+name: check-pack
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  self-check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: 包自检（平台无关检查；平台校验器在 CI 中不可得，会以 skip note 声明）
+        run: node scripts/check-pack.mjs --max-notes 10
+      - name: 门禁自校准（52 例负向对照，必须全部按预期）
+        run: SELFTEST_CONCURRENCY=4 node scripts/selftest-gates.mjs
+      - name: digest 可复现性（dry-run：只报是否需要重钉）
+        run: node scripts/repin-digests.mjs --dry-run
+      - name: i1 解析层自检（8 例含负向样本）
+        run: python skills/macro-capital-framework/references/scripts/i1_collision_check.py --selftest
+      - name: 冒烟测试（照 transport 的 smokeArgs 真跑一次）
+        run: node scripts/smoke-test.mjs
+      - name: 覆盖率报表（盲区必须可见）
+        run: node scripts/check-pack.mjs --coverage
+      - name: 判据登记表在位且与代码一致（criteria-doc 判据）
+        run: node scripts/check-pack.mjs
+      - name: 文档-契约一致性（离线）
+        run: node scripts/check-doc-commands.mjs --dir .
+      - name: 模板一致性门自身的负向对照（2 正向 + 7 负向，必须 9/9）
+        run: node scripts/check-template-conformance.mjs --selftest
+      - name: 门禁接线检查（每道有 config 的门都声明了 wiring）
+        run: node scripts/check-gate-wiring.mjs
+
+  # 行尾纪律：digest 目标是 sha256(SKILL.md)，CRLF 会让摘要全体错位。
+  # 故在两个平台上各验一次行尾一致 —— 这是 digest 可复现性的前提，不是形式。
+  line-endings:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: 工作区无 CRLF（eol=lf 已钉住）
+        run: |
+          if git ls-files --eol | grep -E 'i/crlf|w/crlf'; then
+            echo "::error::检出后出现 CRLF 行尾 ⇒ digest 将与本地不一致"
+            git ls-files --eol | grep -E 'i/crlf|w/crlf'
+            exit 1
+          fi
+          echo "OK: 全部文件为 LF"

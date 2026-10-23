@@ -1,0 +1,73 @@
+# macro-capital-ch
+
+> macro-capital-ch is an **Expert Profile v2 domain pack** for macro and A-share analysis: a
+> self-contained, machine-checkable description of one analyst's judgment method — 15 capability
+> layers, 3 cross-cutting gates, a 51-source provenance ledger, and an output contract that can
+> be checked rather than trusted. Open source under the MIT License; the copyrighted books,
+> textbooks and papers behind it are **not** distributed.
+
+How it works: the pack ships no conclusions. It ships the *process* that produces them — what to
+read, how to decompose expected return, which thresholds invalidate a signal, what a deliverable
+must contain, and which three gates a result must clear before it may be published. The analyst
+profile (persona, capabilities, veto rules), the layer framework, the gate definitions and the
+output templates are separate entities that reference each other, so a change in one place is
+visible everywhere.
+
+The pack enforces its own discipline: every gate is calibrated by injecting known defects and
+asserting the check really fails (`selftest-gates.mjs`), and `CRITERIA.md` states per criterion
+what is checked and what is **not** — so "0 problems" has a declared scope rather than an
+implied one.
+
+Install: point any local AI agent that can read files at
+[`AGENTS.md`](https://github.com/weixkcornell/macro-capital-ch/blob/main/AGENTS.md) and ask it to
+read that first. There is nothing to compile and no runtime to install.
+
+## Instructions for agents
+
+- [AGENTS.en.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/AGENTS.en.md): how to use the pack, in English; read this first
+- [AGENTS.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/AGENTS.md): the same instructions in Chinese
+- [skills/macro-capital-framework/SKILL.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/skills/macro-capital-framework/SKILL.md): the method spec — the one long document to read for actual work
+
+## What is inside
+
+- [experts/macro-capital-analyst.json](https://github.com/weixkcornell/macro-capital-ch/blob/main/experts/macro-capital-analyst.json): the analyst profile — persona, 11 capabilities, mental models, anti-patterns, veto rules
+- [experts/style-renderer.json](https://github.com/weixkcornell/macro-capital-ch/blob/main/experts/style-renderer.json): the style-renderer expert — runs last, changes expression only, never facts
+- [method-packs/fifteen-layer-framework.json](https://github.com/weixkcornell/macro-capital-ch/blob/main/method-packs/fifteen-layer-framework.json): the 15 capability layers, layer 0 being the master switch
+- [method-packs/tri-gates.json](https://github.com/weixkcornell/macro-capital-ch/blob/main/method-packs/tri-gates.json): the three cross-cutting gates (A: statistical credibility, B: implementation cost, C: data quality & rule versioning)
+- [method-packs/six-step-internalization.json](https://github.com/weixkcornell/macro-capital-ch/blob/main/method-packs/six-step-internalization.json): the six-step internalisation workflow
+- [scenarios/](https://github.com/weixkcornell/macro-capital-ch/tree/main/scenarios): two task DAGs — A-share outlook board, cycle positioning & allocation
+- [output-templates/](https://github.com/weixkcornell/macro-capital-ch/tree/main/output-templates): the layout contract for each deliverable (design tokens, components, directives)
+- [quality-policies/baseline.json](https://github.com/weixkcornell/macro-capital-ch/blob/main/quality-policies/baseline.json): 15 quality gates with machine-checkable configuration
+- [domain-knowledge/macro-capital-analyst-kb.json](https://github.com/weixkcornell/macro-capital-ch/blob/main/domain-knowledge/macro-capital-analyst-kb.json): the ontology (35 entities, 33 relations)
+- [source/SOURCE-MANIFEST.json](https://github.com/weixkcornell/macro-capital-ch/blob/main/source/SOURCE-MANIFEST.json): the 51-source provenance ledger
+- [data-contracts/](https://github.com/weixkcornell/macro-capital-ch/tree/main/data-contracts): the data capability contract table
+
+## Docs
+
+- [README.en.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/README.en.md): overview, in English
+- [README.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/README.md): overview (Chinese), structure and version history
+- [docs/architecture.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/docs/architecture.md): how the pieces fit together and how a change propagates
+- [docs/status.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/docs/status.md): what works now, what is not done yet
+- [docs/decisions.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/docs/decisions.md): design trade-offs and why they were made
+- [docs/roadmap.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/docs/roadmap.md): what is planned
+- [docs/threat-model.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/docs/threat-model.md): where this pack is weak and what it refuses to claim
+
+## Specs
+
+- [spec/contracts.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/spec/contracts.md): the stable contracts — dimensions, field shapes, gate anatomy, version lockstep
+- [spec/provenance.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/spec/provenance.md): the source ledger format and the distribution boundary
+- [CRITERIA.md](https://github.com/weixkcornell/macro-capital-ch/blob/main/CRITERIA.md): the machine-verified criteria registry (generated — do not edit by hand)
+
+## Self-checks
+
+```bash
+bash scripts/release-check.sh        # the nine release checks; all green before publishing
+node scripts/check-pack.mjs          # pack-level checks (works without the platform library)
+node scripts/selftest-gates.mjs      # 52 injected-defect cases: proves each check can actually fail
+```
+
+## Optional
+
+- [Releases](https://github.com/weixkcornell/macro-capital-ch/releases): versioned releases
+- [LICENSE](https://github.com/weixkcornell/macro-capital-ch/blob/main/LICENSE): MIT
+- [NOTICE](https://github.com/weixkcornell/macro-capital-ch/blob/main/NOTICE): attribution

@@ -1,0 +1,103 @@
+{
+  "id": "macro-capital-tools",
+  "version": "2.10.0",
+  "schemaVersion": 2,
+  "name": "观澜分析工具集",
+  "description": "包内可执行工具。数据获取**一律先试 Wind CLI**，取不到再走平台 provider 层（zyt / beike）与公开口径自算；本包不自建数据引擎。",
+  "note": "两种「能力」是不同口径，别当成同一张表：①【本包声明的能力】＝下面 capabilities（须带 transport 才能被调度，故只有三方对撞一条）；②【数据引擎契约】＝data-contracts/capability-contract.csv（public.kline.self-compute、macro.official.verify），描述自建数据引擎的输入输出契约，不是包内可调度能力；③ 场景 toolPolicy 里的 wind / zyt / beike 由【平台 provider 层】解析，本包不声明其能力、也不持有其凭据。scripts/check-pack.mjs 会对①②做对照并给出 note（不同口径，非缺陷）。 ④【取数优先级 · v2.8.0 新增】取数优先级（强制 · v2.8.0 起）：**任何数据一律先试 Wind CLI**；Wind 取不到（未安装 / 无权限 / 无该字段 / 调用失败 / 超时）**再退回其他方式**，退回顺序为 westock CLI → 公开接口自算 → 外部口径（须标来源与 as-of）。**禁止跳过 Wind CLI 直接走公开接口**；本期实际落在哪一档、以及未走 Wind 的原因，须在「方法可靠性声明」写明。各档的机器可读顺序见 `scenarios/*.json` 的 `toolPolicy.allowed`（wind 置于首位）与 `quality-policies/baseline.json` 的 `number-consistency.config.dataSourcePriority`。",
+  "capabilities": [
+    {
+      "capability": "macro.collision.check",
+      "operation": "collisionCheck",
+      "transportId": "collision-cli",
+      "readOnly": true,
+      "description": "摘要—正文—底座三方对撞校验（SKILL.md §3.3 的参考实现）"
+    }
+  ],
+  "transports": [
+    {
+      "id": "collision-cli",
+      "kind": "local-cli",
+      "command": "python3",
+      "args": [
+        "skills/macro-capital-framework/references/scripts/i1_collision_check.py"
+      ],
+      "readOnly": true,
+      "timeoutMs": 120000,
+      "smokeArgs": [
+        "--selftest"
+      ],
+      "smokeNote": "声明即承诺：scripts/smoke-test.mjs 照 smokeArgs 真跑一次本 transport —— 静态存在性由 check-pack 把关，可执行性由本字段把关。"
+    }
+  ],
+  "dataChannels": [
+    {
+      "id": "wind-edb",
+      "role": "取数优先级第 1 档（v2.8.0 起强制先试）",
+      "caliber": "Wind EDB 口径",
+      "command": "① 取指标代码（用于引用）：node /root/.agents/skills/wind-mcp-skill/scripts/cli.mjs call economic_data search_economic_indicator '{\"question\":\"沪深300指数收盘价\"}' → 返回 M0342072；② 取时序：node /root/.agents/skills/wind-mcp-skill/scripts/cli.mjs call economic_data query_economic_indicator_data '{\"question\":\"沪深300指数收盘价\",\"beginDate\":\"2026-08-01\",\"endDate\":\"2026-09-30\"}'。**query 只收 question（+可选 beginDate/endDate/observation 等），不收 indicator_code** —— 传 indicator_code 返回 PARAM_VALIDATION_ERROR（2026-09-30 实测）",
+      "credentialLadder": [
+        "~/.wind-aifinmarket/config (WIND_API_KEY)",
+        "<skill>/config.json (wind_api_key)",
+        "环境变量 WIND_API_KEY"
+      ],
+      "failureSemantics": "三态必须分清（2026-09-30 实测）：① AUTH_ERROR / CREDENTIAL_MISSING＝凭据缺失或 HOME 解析错位（CLI 按 homedir() 找 ~/.wind-aifinmarket/config；HOME≠/root 会**误报**『WIND_API_KEY 未配置』）；② PARAM_VALIDATION_ERROR＝入参错（传给 query 的 indicator_code 不被接受）；③ backend_error『账户积分余额不足』＝**鉴权正常但额度耗尽**（凭据未变、mtime 未动），与 ① 不同，不得读成凭据缺失、也不得据此改判档位。三态都 fail-closed：如实报状态 + 已试凭据路径 + 错误码并写入「方法可靠性声明」；禁止重装、禁止绕走 analytics_data/wind-alice、禁止静默降级。",
+      "fallback": "westock CLI → 公开接口自算 → 外部口径（须标来源与 as-of，逐项标注降级理由）",
+      "gates": [
+        "number-consistency(取数档位声明)",
+        "wind-provenance"
+      ],
+      "notSchedulableReason": "本包不持有 Wind 凭据（在用户侧），故不声明为 capabilities/transports —— 否则其 smokeArgs 会在无凭据环境失败，把『凭据缺失』误报成『包损坏』。真伪判据由 scripts/check-wind-provenance.py 在产物侧执行。",
+      "lastProbe": {
+        "date": "2026-09-30T22:35+08:00",
+        "result": "backend_error：账户积分余额不足（鉴权正常、额度耗尽）—— 与 AUTH_ERROR 不同态",
+        "command": "HOME=/root node /root/.agents/skills/wind-mcp-skill/scripts/cli.mjs call economic_data query_economic_indicator_data '{\"question\":\"中国CPI当月同比\",\"beginDate\":\"2026-08-01\",\"endDate\":\"2026-08-31\"}'",
+        "successfulProbeSameDay": "2026-09-30T20:54+08:00 exit 0（M0342072 沪深300收盘价 2026-09-28=4340.755；M0000612 CPI 当月同比 2026-08=0.8）",
+        "operatorAction": "需在 Wind 侧充值后方可继续用档位 1；额度未恢复前一律走降级档并逐项标注"
+      },
+      "probeEvidence": {
+        "date": "2026-09-30",
+        "credentialPath": "/root/.wind-aifinmarket/config（注意：CLI 按 homedir() 找 ~/.wind-aifinmarket/config，需 HOME=/root 才能读到；HOME 指向别处会误报『WIND_API_KEY 未配置』）",
+        "samples": [
+          {
+            "question": "沪深300指数收盘价",
+            "code": "M0342072",
+            "unit": "点",
+            "source": "上海证券交易所",
+            "freq": "日",
+            "updateDate": "20260930",
+            "values": {
+              "20260928": 4340.755,
+              "20260929": 4345.2088,
+              "20260930": 4357.6155
+            },
+            "crossCheck": "与公开K线自算 4340.76/4345.21 一致（两源独立）"
+          },
+          {
+            "question": "中国CPI当月同比",
+            "code": "M0000612",
+            "unit": "%",
+            "source": "国家统计局",
+            "freq": "月",
+            "endDate": "20260831",
+            "values": {
+              "202601": 0.2,
+              "202602": 1.3,
+              "202603": 1.0,
+              "202604": 1.2,
+              "202605": 1.2,
+              "202606": 1.0,
+              "202607": 0.5,
+              "202608": 0.8
+            }
+          }
+        ],
+        "states": [
+          "ok（20:54 实跑成功）",
+          "backend_error/额度耗尽（22:35 期后复核）",
+          "AUTH_ERROR（仅当 HOME≠/root 时的误报）"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "id": "a-share-outlook-team",
+  "version": "2.10.0",
+  "schemaVersion": 2,
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "data": {
+        "type": "string",
+        "description": "行情与宏观数据上下文"
+      },
+      "period": {
+        "type": "string",
+        "description": "看板期"
+      }
+    }
+  },
+  "slots": [
+    {
+      "id": "macro-lead",
+      "capabilities": [
+        "macro.cycle",
+        "equity.strategy",
+        "factor.attribution"
+      ],
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    {
+      "id": "style-editor",
+      "capabilities": [
+        "style.render",
+        "prose.edit",
+        "terminology.normalize",
+        "register.enforce"
+      ],
+      "cardinality": {
+        "min": 1,
+        "max": 1
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "id": "data-selfcalc",
+      "role": "macro-lead",
+      "dependsOn": [],
+      "inputs": [],
+      "allowedCapabilities": [
+        "macro.cycle",
+        "equity.strategy",
+        "factor.attribution"
+      ],
+      "retryPolicy": "quality-repair",
+      "deliverablePaths": [
+        "data-base.json",
+        "data-base.md"
+      ]
+    },
+    {
+      "id": "consensus-scan",
+      "role": "macro-lead",
+      "dependsOn": [
+        "data-selfcalc"
+      ],
+      "inputs": [],
+      "allowedCapabilities": [
+        "macro.cycle",
+        "equity.strategy",
+        "factor.attribution"
+      ],
+      "retryPolicy": "quality-repair",
+      "deliverablePaths": [
+        "consensus.md"
+      ]
+    },
+    {
+      "id": "six-step-gate",
+      "role": "macro-lead",
+      "dependsOn": [
+        "consensus-scan"
+      ],
+      "inputs": [],
+      "allowedCapabilities": [
+        "macro.cycle",
+        "equity.strategy",
+        "factor.attribution"
+      ],
+      "retryPolicy": "quality-repair",
+      "deliverablePaths": [
+        "six-step.md",
+        "gate-a-stats.json",
+        "gate-b.json"
+      ]
+    },
+    {
+      "id": "fusion-render",
+      "role": "macro-lead",
+      "dependsOn": [
+        "six-step-gate"
+      ],
+      "inputs": [],
+      "allowedCapabilities": [
+        "macro.cycle",
+        "equity.strategy",
+        "factor.attribution"
+      ],
+      "retryPolicy": "quality-repair",
+      "deliverablePaths": [
+        "final.md",
+        "index.html"
+      ]
+    },
+    {
+      "id": "style-render",
+      "role": "style-editor",
+      "dependsOn": [
+        "fusion-render"
+      ],
+      "inputs": [],
+      "allowedCapabilities": [
+        "style.render",
+        "prose.edit",
+        "terminology.normalize",
+        "register.enforce"
+      ],
+      "retryPolicy": "quality-repair",
+      "deliverablePaths": [
+        "final.md",
+        "style-report.json",
+        "index.html"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "policy": "baseline",
+      "gate": "banned-tokens",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "number-consistency",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "render-overflow",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "layout-audit",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "section-outline",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "placeholder-clean",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "collision-check",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "gate-a-double-calibration",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "wind-provenance",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "mobile-readability",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "template-conformance",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "style-render",
+      "appliesTo": [
+        "deliverable"
+      ]
+    },
+    {
+      "policy": "baseline",
+      "gate": "data-quality-rule-version",
+      "appliesTo": [
+        "deliverable"
+      ]
+    }
+  ],
+  "deliverables": [
+    {
+      "id": "a-share-outlook.deliverable",
+      "outputTemplate": "a-share-outlook",
+      "fromTasks": [
+        "data-selfcalc",
+        "consensus-scan",
+        "six-step-gate",
+        "fusion-render",
+        "style-render"
+      ]
+    }
+  ],
+  "deliverableNotes": [
+    "看板（HTML + markdown）",
+    "数据底座表",
+    "GATE 验收文件"
+  ],
+  "deliverablePathsNote": "任务\"完成\"的证据是【产物文件存在且被复核】，不是执行者自述。execute 前请确保落点目录存在；交付级门禁（scripts/audit-delivery.sh）对最终产物做核对，中间任务的产物由队长按本字段逐条核在不在。"
+}

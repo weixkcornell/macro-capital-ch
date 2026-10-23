@@ -1,0 +1,105 @@
+{
+  "id": "a-share-outlook",
+  "name": "中国 A 股市场观点看板",
+  "version": "2.10.0",
+  "schemaVersion": 2,
+  "domain": "equity.strategy",
+  "intents": [
+    "A股看板",
+    "市场观点",
+    "A股策略",
+    "宏观周期定位"
+  ],
+  "requiredCapabilities": [
+    {
+      "capability": "macro.cycle",
+      "minProficiency": 4
+    },
+    {
+      "capability": "equity.strategy",
+      "minProficiency": 4
+    },
+    {
+      "capability": "factor.attribution",
+      "minProficiency": 4
+    }
+  ],
+  "routingPolicy": {
+    "candidateHints": [
+      "macro-capital-analyst",
+      "docs-coordinator"
+    ]
+  },
+  "experts": [
+    "macro-capital-analyst",
+    "style-renderer"
+  ],
+  "outputTemplate": "a-share-outlook",
+  "qualityPolicy": "baseline",
+  "tasks": [
+    {
+      "subject": "一手数据自算",
+      "description": "用公开 K 线自算四档分位、年化波动、最大回撤、相关矩阵与 regime、拥挤度、风险贡献分解；产出 ≥3 条本人测算的市场结构结论，所有数字带口径与截至期。",
+      "expert": "macro-capital-analyst",
+      "id": "data-selfcalc"
+    },
+    {
+      "subject": "市场共识检索",
+      "dependsOn": [
+        0
+      ],
+      "description": "检索近一周券商 / 研究号公开观点，逐条标注可点击来源；只作对照组，形成「市场共识与我的分歧」底稿。",
+      "expert": "macro-capital-analyst",
+      "id": "consensus-scan"
+    },
+    {
+      "subject": "六步研判与闸门校验",
+      "dependsOn": [
+        0,
+        1
+      ],
+      "description": "按六步内化流程重构观点（钱从哪来 → 钱变利润 → 价格装多少预期 → 结构定价自洽 → 周期定位风险归属 → 错了会怎样）；落笔前过三道横切闸门（统计可信 + 摩擦可执行 + 数据质量与规则版本，净 α ≤ 0 不发布）；若判定为因子表达周，补做因子归因三要素。动手前先完整阅读 skills/macro-capital-framework/SKILL.md 并按其规范执行。",
+      "expert": "macro-capital-analyst",
+      "id": "six-step-gate"
+    },
+    {
+      "subject": "融合成文与渲染验收",
+      "dependsOn": [
+        2
+      ],
+      "description": "生成自包含 HTML（浅色、学术排版，涨=红、跌=绿），含强制章节：摘要、分歧表、六步主体、上期判断回顾、方法可靠性声明、脚注与来源回链；文末固定「不构成投资建议」。",
+      "expert": "macro-capital-analyst",
+      "id": "fusion-render"
+    },
+    {
+      "id": "style-render",
+      "subject": "文风渲染（发表前必过）",
+      "dependsOn": [
+        3
+      ],
+      "description": "按 style-render-pipeline 对定稿做表达层改写（对标文风：开门见山／短句／具体压过抽象／克制修辞／主张带归因且事实与判断分句式／去口号化／可证伪条件句／术语规范）；**刊名不可见**；数字、口径、结论、脚注一律不得改动；产出 style-report.json 并重出 HTML。动手前完整阅读 skills/macro-capital-framework/SKILL.md §6 与 method-packs/style-render-pipeline.json。",
+      "expert": "style-renderer"
+    }
+  ],
+  "deliverable": "A 股市场观点看板（HTML + markdown）+ 数据底座表 + GATE 验收文件",
+  "teamTemplate": "a-share-outlook-team",
+  "knowledgePolicy": {
+    "required": [
+      "macro-capital-analyst-library:source-materials"
+    ]
+  },
+  "toolPolicy": {
+    "allowed": [
+      "wind",
+      "zyt",
+      "beike"
+    ]
+  },
+  "description": "从一手数据自算与市场共识对照出发，按六步内化流程重构观点、过三道闸门，产出含上期回顾与可靠性声明的 A 股观点看板。 取数优先级（强制 · v2.8.0 起）：**任何数据一律先试 Wind CLI**；Wind 取不到（未安装 / 无权限 / 无该字段 / 调用失败 / 超时）**再退回其他方式**，退回顺序为 westock CLI → 公开接口自算 → 外部口径（须标来源与 as-of）。**禁止跳过 Wind CLI 直接走公开接口**；本期实际落在哪一档、以及未走 Wind 的原因，须在「方法可靠性声明」写明。",
+  "skill": {
+    "id": "macro-capital-framework",
+    "purpose": "观澜宏观与 A 股分析的完整工艺规范（行文/用数/门禁）",
+    "appliesToTaskIndex": 3,
+    "appliesToTaskId": "fusion-render"
+  }
+}

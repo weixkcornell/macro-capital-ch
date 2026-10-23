@@ -1,0 +1,41 @@
+# 提交物验收清单（观澜领域包）
+
+> 平台评审按此逐项打勾；先自检再提交。
+
+- [x] `pack.json`（id=macro-capital-analyst / version=2.10.0 / schemaVersion=2 / caliberDeclarations 八类口径（统计局/央行/公开K线/Wind/westock/北向/申万/中证））
+- [x] `experts/macro-capital-analyst.json`（schemaVersion 2 全字段；`source/SOURCE-MANIFEST.json` 溯源齐备，46 份材料）
+- [x] `scenarios/*.json`（DAG 依赖无环、专家 id 全部可解析、deliverable 明确；共 2 个）
+- [x] `output-templates/` + `quality-policies/`（起步门禁 10 道覆盖数字一致与禁例 token；含 `gate-a-double-calibration` / `net-active-return-required` / `active-risk-budget` 硬门，且每道门均有 team template 绑定）
+- [x] `method-packs/`（六步内化 / **十五层能力** / 三道闸门）+ `team-templates/`（2 个组队模板）
+- [x] `skills/macro-capital-framework/SKILL.md`（触发词齐全；其 references 与 scripts 全部落在 `skills/macro-capital-framework/references/checklist-template.md` 与 `skills/macro-capital-framework/references/scripts/i1_collision_check.py`，并由 check-pack 的 ref-integrity／skill-reference-missing 逐条核对）
+- [x] 数据契约表（`data-contracts/capability-contract.csv`，自建数据引擎契约）
+- [x] 本体（`domain-knowledge/macro-capital-analyst-kb.json`，recordCount=38，digest = `sha256(source/SOURCE-MANIFEST.json)`，已声明 `digestTarget`/`digestAlgorithm` 并由 `check-pack.mjs` 当场复算）
+- [x] 知识供给 / 技能包 / 工具集（`knowledge-providers/` + `skill-packages/` + `tool-providers/`）
+- [x] 自检脚本（`scripts/check-pack.mjs`：version lockstep + 文档版本 lockstep + 门禁绑定 + DAG 完整性 + digest 可复现性 + 占位符残留 + fileRef 安全 + bannedTokens 阈值 + **引用完整性四门**（contributions／scenario 引用／SKILL.md 点名文件／transport 路径）+ 三方对撞目标；`--json` 供脚本/CI 读；平台校验器缺失时以 skip note 声明并继续跑其余检查）
+- [x] **门禁自校准脚本**（`scripts/selftest-gates.mjs`：**46 例**负向对照 —— 基线 ／ 徽章・历史・清单三处版本漂移 ／ 实体版本漂移 ／ digest 不符 ／ 缺 `digestTarget` ／ 占位符残留 ／ fileRef 绝对路径 ／ 发布说明占位 ／ 禁例覆盖缺口；任一未被抓住即 exit 1）
+- [x] **判据 × 负向对照矩阵**（`negative-controls` 硬门：自有 code 必须 100% 有负向对照，未覆盖即 FAIL；平台校验器自带的 16 个 code 显式排除。现 **自有 39/39**）
+- [x] **任务级产物落点**（组队模板每个任务声明 `deliverablePaths`，由 `task-deliverable-paths-missing` 判据校验 —— 「完成」以**文件存在**为证据，不以自述为证据）
+- [x] **写法约定入 `dataRules.writingRules`**（不得出现来源标识：方法名可用、作者名不可；引用他人结论带发布日；数字带口径与数据期；生成器须自带空值自检）
+- [x] **渲染器**（`scripts/render-report.mjs`：按模板 `rendering` 声明渲染**自包含** HTML5；自包含是硬要求 —— 门禁要在 `file://` 下用无头浏览器逐视口测）
+- [x] **交付级门禁可一条命令跑完**（`scripts/audit-delivery.sh`：number-consistency／section-outline／placeholder-clean／banned-tokens／render-overflow；判据全部从包里读）。为此补了两把此前缺失的执行工具：`scripts/check-sections.mjs`、`scripts/audit-render.py`；两者已在首单产物上校准（章节 6/6、五档视口 0 溢出、对比度 1079/1079）
+- [x] **交付物门禁均有可执行判据**（10 道门全部带 `config`；`structure-gate-no-config` 判据保证今后不会出现"只有声明、没有判据"的门。`render-overflow` 的五档视口/溢出判据/WCAG AA 阈值、`section-outline` 的大纲抽取与对照口径、`layout-audit` 的三项检查均取自首单实测口径）
+- [x] **判据登记表**（`CRITERIA.md`，19 条：id／强度 hard·structural·advisory／对象／量程／**不查什么**／可报出的 code；由 `check-pack --criteria-md` 生成，`criteria-doc` 判据逐字比对防漂移）
+- [x] **覆盖率报表**（`scripts/check-pack.mjs --coverage`：登记"哪个判据读过哪个文件"，输出「有针对性判据／仅通用扫描／没人读」三类；当前 **36 文件：36／0／0**）｜**禁例覆盖 85/85（禁例 90 条／通用术语豁免 8 条／待判定 0 条，`maxReviewPending=0`）**
+- [x] **冒烟测试**（`scripts/smoke-test.mjs`：照 transport 的 `smokeArgs` **真跑一次** —— 静态存在性由 `check-pack` 把关，**可执行性**由本脚本把关；声明即承诺）
+- [x] 技能脚本自检（`skills/macro-capital-framework/references/scripts/i1_collision_check.py --selftest`：8 例含负向样本，覆盖指数名吞数字／千分位／小数边界；报告另含 `caliber` 声明容差与池口径）
+- [x] **发布流程脚本化**（`scripts/bump-version.mjs` 一处改版本号同步 4 类载位并重钉 digest ／ `scripts/repin-digests.mjs` ／ `scripts/install-to-profile.sh` 安装副本同步［先备份、保留安装侧 `routing/`、副本内自检］／ `scripts/release-check.sh` 发布前四件套）＋ **`RELEASING.md`**
+- [x] **CI**（`.github/workflows/check.yml`：push/PR 跑包自检 ＋ 门禁自校准 ＋ digest dry-run ＋ i1 自检）＋ **`.gitattributes`**（`eol=lf`，保 digest 跨平台稳定）
+- [x] **试运行记录（首单，2026-09-17）：端到端一单 = 「观澜 · A股观点看板」** —— 一手数据自算 → 市场共识对照（22 条一手 URL 全部 HTTP 200 复核）→ 六步研判 + 两道横切闸门 → 定稿 → HTML5 渲染 → 质量门禁 → 公网发布。
+  - **GATE 文件**：门禁脚本 **11 件全部钉扎 sha256**（`final.md.freeze#toolchain_pins`，逐件对磁盘复算 11/11 一致）；摘要—正文—底座三方对撞 **47/47 PASS**；对比度 **1542 节点 0 失败**（抽样口径曾漏 12 处，见该单记录）；判决语白名单 6 态 + 逐字溯源 PASS。
+  - **匿名化对外样本**：公网看板 `https://yy.meizu.life/render/观澜-a股观点看板/a-share-outlook-20260915.html` —— 对外只列「领域 · 首字母」，无真实人名、无内网地址；团队活动面板快照另发布一份（仅本团队、已排除其他团队内容）。
+  - **放行判定**：**报告层 GO**；**报告内配置结论（超配/低配/轮动）不发布** —— 闸门 A 不通过（红利相对沪深300 全样本年化超额 t=0.31 ≪ 3.0，样本 6.7 年，BH-FDR/Bonferroni 存活 0），闸门 B 不通过（实施成本篮子不完整且类别错配）。
+  - **版本口径（诚实声明）**：该单运行在**本机 `domain-packs/` 的 v2.2.0 安装副本**上 ⇒ 它验证的是 **v2.2.0** 的场景/组队/门禁链端到端可用；v2.3.0 之后的增补当时尚未实跑（本版 `i1_collision_check.py` 的修复正是由该单发现的）。
+- [x] **试运行记录（第二单，2026-09-25）：端到端一单跑在 v2.4.12 上** —— 场景 `a-share-outlook`；数据边界 **2026-09-24 收盘**（宏观 2026-08、LPR 截至 2026-09-20、10Y 国债 2026-09-23）。**此前"2.3.0 之后的增补未实跑"的口径由此关闭。**
+  - **产物**：`final.md`（六节齐全）＋ `index.html`（按模板 `rendering` 声明的自包含 HTML5）；公网：`https://yy.meizu.life/render/观澜-a股观点看板/a-share-outlook-20260924.html`（线上与磁盘逐字节一致）。
+  - **交付级门禁（判据全部从包里读）**：数字三方对撞 **44/44**｜章节 **6/6**｜占位符与未注入空值 **0**｜禁例 token **0**｜渲染五档视口 **0 溢出**、对比度 **573/573** ⇒ **全通过**。
+  - **两道闸门**：**A 不通过**（主假设 t = −0.30，7 个假设校正后存活 0，Deflated Sharpe 0.0004；Haircut 口径缺原文标 unknown）｜**B 不通过**（成本五度量 0/5 可得 ⇒ 无净额；E[R_A] = −308.5 bp/年）⇒ **不发布任何超配/低配/轮动结论**。
+  - **本单对包的三个回填**（均为当场撞出来的缺口，见 v2.4.12 发布说明）：任务产物路径 `deliverablePaths`＋判据／写法约定入 `dataRules.writingRules`／交付门禁第③项扩展为"占位符＋未注入空值"。
+- [x] **文档与元数据完整**（`README.en.md` 英文概览／`CONTRIBUTING.md` 贡献指南／`knowledge/experts/macro-capital-analyst/README.md` 知识底座自建说明；`pack.json` 含 `license`/`repository`/`homepage`/`keywords`/`author`，由 `pack-metadata-missing` 判据把关）
+- [x] 全部 JSON 可解析（`python3 -m json.tool`）
+- [x] 全部【替换：…】占位符已清除
+- [x] 无凭据 / 密钥 / 内网地址 / 真实个人信息（publicLabel 仅「领域·首字母」）
