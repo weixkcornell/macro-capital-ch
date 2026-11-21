@@ -24,6 +24,7 @@
 | `caliber-declared` | structural | data-contracts/*.csv 的 caliber 列 | 每一行的 caliber 必须能对上 pack.json 的 caliberDeclarations 键或 caliberAliases 值 | 口径取值的正确性（只判"有声明"，不判"用得对不对"） | `caliber-undeclared`（有对照） |
 | `capability-usage` | advisory | experts[].capabilities 的引用情况 | 未被包内引用、且未标 scope:platform 的能力 → note（可能是漏标，也可能拼错） | 不做判定；被标 platform 的项默认视为合理 | — |
 | `notes-budget` | structural | check-pack 自身的 note 数量 | --max-notes N 时，note 数不得超过 N（CI/release-check 会带上） | note 的语义重要性（只计数量） | `notes-budget-exceeded`（有对照） |
+| `version-map` | structural | VERSIONS.json 与包实物的版本 / 门禁 / 源数一致性 | carriers.pack.version == pack.json.version；gateCounts 与 tri-gates 实际 rules 数一致；sourceCounts.total == SOURCE-MANIFEST materials 数 | 技能 / 插件包 / 账本侧的实际版本（不在仓内——由 scripts/sync-from-skill.mjs 报告；本地跑、CI 跳过） | `version-map-mismatch`（有对照） |
 | `contract-vs-tools` | advisory | data-contracts/capability-contract.csv ↔ toolProviders.capabilities | 两者 capability 名不完全对应时给 note（不同口径，非缺陷） | 不做判定：二者分别描述"数据引擎契约"与"包内可调度能力" | — |
 | `platform-resolution` | advisory | scenarios[].toolPolicy.allowed 中未由本包声明的能力 | 按能力聚合为一条 note（列出出现场景） | 平台是否真的提供这些能力、凭据是否可用 | — |
 | `coverage` | advisory | 包内全部文件 | 登记"哪个判据读过哪个文件"，输出 有针对性判据／仅通用扫描／没人读 与强度分布 | 判据本身的强度（"被 hard 判据读过"≠"该文件被充分验证"） | — |
@@ -237,6 +238,16 @@
   "notChecked": "note 的语义重要性（只计数量）",
   "codes": [
    "notes-budget-exceeded"
+  ]
+ },
+ {
+  "id": "version-map",
+  "level": "structural",
+  "subject": "VERSIONS.json 与包实物的版本 / 门禁 / 源数一致性",
+  "scope": "carriers.pack.version == pack.json.version；gateCounts 与 tri-gates 实际 rules 数一致；sourceCounts.total == SOURCE-MANIFEST materials 数",
+  "notChecked": "技能 / 插件包 / 账本侧的实际版本（不在仓内——由 scripts/sync-from-skill.mjs 报告；本地跑、CI 跳过）",
+  "codes": [
+   "version-map-mismatch"
   ]
  },
  {

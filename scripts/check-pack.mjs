@@ -124,6 +124,10 @@ const CRITERIA = [
     scope: '--max-notes N 时，note 数不得超过 N（CI/release-check 会带上）',
     notChecked: 'note 的语义重要性（只计数量）',
     codes: ['notes-budget-exceeded'] },
+  { id: 'version-map', level: 'structural', subject: 'VERSIONS.json 与包实物的版本 / 门禁 / 源数一致性',
+    scope: 'carriers.pack.version == pack.json.version；gateCounts 与 tri-gates 实际 rules 数一致；sourceCounts.total == SOURCE-MANIFEST materials 数',
+    notChecked: '技能 / 插件包 / 账本侧的实际版本（不在仓内——由 scripts/sync-from-skill.mjs 报告；本地跑、CI 跳过）',
+    codes: ['version-map-mismatch'] },
   { id: 'contract-vs-tools', level: 'advisory', subject: 'data-contracts/capability-contract.csv ↔ toolProviders.capabilities',
     scope: '两者 capability 名不完全对应时给 note（不同口径，非缺陷）',
     notChecked: '不做判定：二者分别描述"数据引擎契约"与"包内可调度能力"',
@@ -500,6 +504,38 @@ if (pack.pack?.version) {
     }
   }
 }
+
+
+  // ---------------------------------------------------------------- 15b. VERSIONS.json（版本映射权威表，v2.11.0 起）
+  // 背景：五套版本号（技能/领域包/新仓/插件包/账本）此前只靠散文互指，技能侧加判据时下游静默过期
+  //（v2.9.0 实际漏搬 2 条闸门判据）。本表是唯一权威映射；仓内可机检的部分在此校验，
+  // 仓外部分（技能/插件包/账本）由 scripts/sync-from-skill.mjs 报告（本地跑、CI 跳过）。
+  {
+    const vp = resolve(dir, 'VERSIONS.json')
+    if (!existsSync(vp)) {
+      fail('version-map-mismatch', 'VERSIONS.json', '缺失：多载体版本映射无权威表')
+    } else {
+      mark('version-map', vp)
+      const v = JSON.parse(readText(vp))
+      const pv = pack.pack?.version
+      if (v.carriers?.pack?.version !== pv) {
+        fail('version-map-mismatch', 'VERSIONS.json', `carriers.pack.version(${v.carriers?.pack?.version}) ≠ pack.json(${pv})`)
+      }
+      const tri = JSON.parse(readText(resolve(dir, 'method-packs/tri-gates.json')))
+      const g = id => (tri.gates ?? []).find(x => x.id === id)?.rules?.length
+      for (const [gid, key] of [['gate-a', 'gateA'], ['gate-b', 'gateB'], ['gate-c', 'gateC']]) {
+        if (v.gateCounts?.[key] !== g(gid)) {
+          fail('version-map-mismatch', 'VERSIONS.json', `gateCounts.${key}(${v.gateCounts?.[key]}) ≠ tri-gates ${gid} 实际 ${g(gid)} 条`)
+        }
+      }
+      if (existsSync(manifestPath)) {
+        const man = JSON.parse(readText(manifestPath))
+        if (v.sourceCounts?.total !== (man.materials ?? []).length) {
+          fail('version-map-mismatch', 'VERSIONS.json', `sourceCounts.total(${v.sourceCounts?.total}) ≠ SOURCE-MANIFEST materials ${(man.materials ?? []).length}`)
+        }
+      }
+    }
+  }
 
 // ---------------------------------------------------------------- 10. 占位符残留（包自身，不只产物）
 // 记法 vs 残留（本文件自己就写着这条规则，故必须能区分"提及"与"使用"）：

@@ -27,10 +27,12 @@ run "⑨ 门禁接线检查（哪个门由哪个执行器消费哪些判据键�
     bash -c 'node scripts/check-gate-wiring.mjs && node scripts/check-gate-wiring.mjs --selftest'
 run "⑩ 仓库骨架自检（AI 入口页在位／文档链接可解析／LF 行尾／无占位符残留）" \
     node tests/test-repo-skeleton.mjs
+run "⑪ 技能漂移报告（本地技能可得时实检；CI 跳过）" \
+    node scripts/sync-from-skill.mjs
 echo "── ⑦ 覆盖率（盲区可见；含判据强度分级）"
 node scripts/check-pack.mjs --coverage 2>/dev/null | sed -n '/覆盖率/,$p'
 echo "── ⑧ 判据登记表（查了什么／没查什么）"
 node scripts/check-pack.mjs 2>/dev/null >/dev/null; node -e "const t=require('fs').readFileSync('CRITERIA.md','utf8');const n=(t.match(/^\\| \`/gm)||[]).length;console.log('  CRITERIA.md 在位，登记判据 '+n+' 条（与代码逐字一致由 criteria-doc 判据把关）')"
 
-if [ "$rc" -eq 0 ]; then echo; echo "✓ 发布前十件套全通过（附覆盖率报表）"; else echo; echo "✗ 有检查未通过 —— 不要发布"; fi
+if [ "$rc" -eq 0 ]; then echo; echo "✓ 发布前十一件套全通过（附覆盖率报表）"; else echo; echo "✗ 有检查未通过 —— 不要发布"; fi
 exit "$rc"

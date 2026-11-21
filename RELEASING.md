@@ -48,6 +48,7 @@ bash scripts/release-check.sh
 | ⑧ | `audit-mobile.py --selftest` ＋ `check-wind-provenance.py --selftest` | **判据来源自校准**：用**故意偏离内置默认**的合成策略跑一遍，断言声明的判据**真的生效**（移动端 7 项 / Wind 6 项）。理由：v2.8.10 之前 `mobile` 与 `wind` 两道门的声明判据根本没被加载/消费，而门禁照样 PASS —— **「加载了策略」与「策略生效」是两件事**，只有偏离默认的对照才能分辨 |
 | ⑨ | `check-gate-wiring.mjs`（＋`--selftest` 1 正向 4 负向） | **门禁接线检查**：每道有 `config` 的门必须声明 `config.wiring` —— `executor`＋`consumesKeys`（键名须在执行器源码里按**独立标识符**出现）/ `builtin` / `semantic`（后两者须给 reason），文档性键须入 `notConsumed`，声明了 `selfTest` 的脚本须真被 `release-check.sh` 调用。理由：本包一天内连踩三例**「声明被加载 ≠ 声明生效」**（mobile 加载器、wind 未消费、mobile 正文字号键类型），此检查把这件事变成**事前可机检** |
 | ⑩ | `tests/test-repo-skeleton.mjs` | **仓库骨架自检**：AI 入口页（`AGENTS.md`/`AGENTS.en.md`/`llms.txt`）在位、文档相对链接逐条可解析、全部文本文件为 LF 行尾、无占位符残留。理由：包自检管的是「包对不对」，骨架层管的是「仓库对不对」——AI 拿到的第一页若缺失或链接失效，纪律再全也用不上 |
+| ⑪ | `scripts/sync-from-skill.mjs` | **技能漂移报告**：同 ⑩ 语义（见 repo2 RELEASING.md；本仓与领域包同源同判据） |
 
 **任何一项红：不要发布。**
 
