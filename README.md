@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
-  <img alt="Version" src="https://img.shields.io/badge/Version-2.10.0-brightgreen">
+  <img alt="Version" src="https://img.shields.io/badge/Version-2.11.0-brightgreen">
   <img alt="schemaVersion" src="https://img.shields.io/badge/schemaVersion-2-orange">
   <img alt="Expert Profile v2" src="https://img.shields.io/badge/Expert%20Profile-v2-9cf">
   <img alt="领域" src="https://img.shields.io/badge/%E9%A2%86%E5%9F%9F-%E9%87%91%E8%9E%8D%E6%8A%95%E8%B5%84-red">
@@ -191,6 +191,8 @@ macro-capital-ch/
 
 ## 版本历史
 
+
+- **2.11.0**（2026-11-21）：**补齐闸门判据本体——v39/v40 漏同步的 2 条 + 计数口径全面对齐（治理轮，方法论零变更）** —— ① **如实更正**：2.9.0 发布说明声称「同步 macro-capital-market-analysis v40」，但技能侧闸门判据本体只同步了一部分——技能 §4.1 的 **⑧ 检验阶梯与功效披露（Campbell-Lo-MacKinlay）**、**⑨ ML 时代扩展（v40 新增）**与闸门 B 的 **⑦ 实施成本作为建模输入（Meucci）**三条判据**未搬入本包**，tri-gates.json 实为 8/6/4。本轮补齐 ⇒ **gate-a 9 / gate-b 7 / gate-c 4**（gate-a 的双锚子句并入 haircut 条以对齐技能 §4.1 的九条编号）。② **计数口径全面对齐**：pack.json 描述、experts aggregationLogic、SKILL.md §3 闸门 condensed 行全部改「A 九条 / B 七条 / C 四条」——原「七条/六条」与自家 tri-gates 实体对不上（发现于本轮深度审查 H3）。③ **发布说明纪律**：本轮把「同步 v40」的漏搬写进版本史——**声明同步就必须逐条核对判据本体**，今后技能侧加判据时须在同步 PR 里逐条搬运并在发布说明列出条目号。④ 方法论零变更：判据全文逐字取自技能 v41 §4，未改语义；knowledge-ledger 与 SOURCE-MANIFEST 不变。v2.10.0 → **v2.11.0**。
 
 - **2.10.0**（2026-10-23）：**新仓 `macro-capital-ch` —— 按 brainlib 的「AI 优先」骨架重组领域包** —— ① **为什么重组**：这个包的拿手读者多半是 AI 助手，而原来的仓库骨架是「给人看的包」结构——README 讲清楚了能干什么，但**没有一页是写给 AI 的**（拿到包先读哪页、别做什么、三道闸门为什么不能跳）。brainlib 的结构哲学恰好解决这件事：`AGENTS.md`（AI 入口）+ `llms.txt`（机器可读索引）+ `spec/`（稳定契约）+ `docs/`（状态/决策/路线图）+ `examples/`（照着能跑的样例）+ `NOTICE`。本版把这套骨架**加在**领域包之上，**不动包内十维度与任何判据**。② **新增 `AGENTS.md` / `AGENTS.en.md`（AI 入口页）**：开头三件事先说清——「这个包不产出观点、只产出有约束的判断流程」「原著原文不在包里、51 源只有内化摘要层」「它只对自己声明的口径负责」；然后按三种处境分流（§A 出看板 / §B 出研判 / §C 接进自己系统）；末段写「不要做的事」（不凭印象补数据、不跨版本加总命中率、不把 PCA 解释度当因子有效性、不写书名刊名、不单腿下结论）。③ **新增 `llms.txt`**：AI 的机器可读索引（描述 + 入口 + 目录清单 + 文档/规范/自检分组）。④ **新增 `spec/`（2 份稳定契约）**：`contracts.md` 记十维度、门禁四要素、版本十处锁步、digest 规则、退出码，末节明写「刻意不查什么」；`provenance.md` 记源账本字段、51 源/59 份的分项计数、分发边界、禁例词干阈值 0 的含义，以及「新增源」的六步流程。⑤ **新增 `docs/`（5 份）**：`architecture.md` 讲三个层次与**一次改动的波及面**（哪 9 处必须同改）；`status.md` 分「能用的 / 还没有的 / 数字口径」；`decisions.md` 记 20 条设计取舍与理由；`roadmap.md` 记 8 条计划与**明确不做的 5 条**；`threat-model.md` 讲**它防住了什么、防不住什么、拒绝声称什么**（12 条弱点 + 7 条拒绝声称）。⑥ **新增 `examples/`（3 份）**：`minimal-board/` 给看板链路骨架（5 任务 DAG + 每步产物该有什么 + 13 道门禁绑在哪 + 两个最易漏的点）；`gate-triage/` 给三道闸门的判定演练（4 个具体情形，含「数据陈旧但接口不报错」与「换了规则没说」两类静默失败）。**样例只演示结构与判定，不含任何真实市场数据或结论**——放一个看起来完整的样例比不放更危险。⑦ **新增 `tests/test-repo-skeleton.mjs`（第 ⑩ 件套）**：管「仓库骨架对不对」（AI 入口页在位 / 文档相对链接逐条可解析 / 全部文本为 LF / 无占位符残留），与管「包对不对」的 check-pack 分开——两类失败模式不同，混在一起就有一类永远没人查。**发布前由九件套升为十件套**；CI 在 Linux 与 Windows **两个平台各跑一遍**，并加一道行尾检查（digest 目标是 sha256(SKILL.md)，CRLF 会让摘要全体错位）。⑧ **`pack.json` 的 repository/homepage 指向新仓**；`NOTICE` 记录署名与「打包自 macro-capital-analyst」的来源关系。⑨ **包内能力零变更**：十维度、15 层、3 道闸门、15 道门禁、51 源、35 实体/33 关系、49 例负向对照（＋本版补 3 例 ⇒ 52 例）、23 条判据**数量不变**；本版只加骨架层与文档；**唯一的判据变动是 `license-consistency` 扩到 NOTICE**（见 ⑪），其余 22 条逐字不变，`CRITERIA.md` 由代码重生成。⑩ **如实声明两处限制**：⑭⑮ 两层的底本实证仍全是海外样本，A 股参数须本地重标定（涨跌停/T+1/停牌结构性改变波动率持续性，禁止直接沿用海外 GARCH 参数）；A 股宏观 vintage 未获取，实时数据流纪律在本地只能作原则要求。
 

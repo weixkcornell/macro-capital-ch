@@ -1,4 +1,4 @@
-# Contracts v2.9.0
+# Contracts v2.11.0
 
 These are stable within a major version. Changes are additive only; renamed entities keep
 their old name for one major version; this pack never rewrites user files to migrate them.
